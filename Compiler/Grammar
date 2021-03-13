@@ -125,7 +125,7 @@ _____________________________________________________________________
 <expression_set> -> <expression> <expression_set>
                   | <expression>
 
-<expression_structure> -> LEFTPAREN <expression_set> RIGHTPAREN SEMICOLON
+<expression_structure> ->
 
 <condition> -> LEFTPAREN <condition> RIGHTPAREN
              | <condition> EQUAL <condition>
@@ -133,12 +133,12 @@ _____________________________________________________________________
              | <condition> GREAT <condition>
              | <expression>
 
-<boolean> -> And <expression_structure>
-           | Or <expression_structure>
-           | Greater <expression_structure>
-           | Smaller <expression_structure>
-           | Equal <expression_structure>
-           | Not <expression>
+<boolean> -> And LEFTPAREN <expression_set> RIGHTPAREN SEMICOLON
+           | Or LEFTPAREN <expression_set> RIGHTPAREN SEMICOLON
+           | Greater LEFTPAREN <expression_set> RIGHTPAREN SEMICOLON
+           | Smaller LEFTPAREN <expression_set> RIGHTPAREN SEMICOLON
+           | Equal LEFTPAREN <expression_set> RIGHTPAREN SEMICOLON
+           | Not LEFTPAREN <expression> RIGHTPAREN SEMICOLON
 
 <arithmetic> -> <product>
               | <power>
@@ -147,11 +147,11 @@ _____________________________________________________________________
               | <subtract>
               | <random>
 
-<product> -> Multiply <expression_structure>
-<divide> -> Divide <expression_structure>
-<power> -> Power <expression_structure>
-<addition> -> Addition <expression_structure>
-<subtract> -> Subtract <expression_structure>
+<product> -> Multiply LEFTPAREN <expression_set> RIGHTPAREN SEMICOLON
+<divide> -> Divide LEFTPAREN <expression_set> RIGHTPAREN SEMICOLON
+<power> -> Power LEFTPAREN <expression_set> RIGHTPAREN SEMICOLON
+<addition> -> Addition LEFTPAREN <expression_set> RIGHTPAREN SEMICOLON
+<subtract> -> Subtract LEFTPAREN <expression_set> RIGHTPAREN SEMICOLON
 
 
 
