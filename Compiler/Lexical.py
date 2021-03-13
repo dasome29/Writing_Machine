@@ -38,7 +38,7 @@ class Lexer(object):
         'Subtract': 'SUBTRACT',
         'Multiply': 'MULTIPLY',
         'Power': 'POWER',
-        'Divide': 'DiVIDE',
+        'Divide': 'DIVIDE',
         'Addition': 'ADDITION',
         'Random': 'RANDOM'
     }
@@ -61,7 +61,6 @@ class Lexer(object):
                  'COMMENT'
              ] + list(reserved.values())
 
-    t_WHITESPACE = r'\n[ ]*'
     t_LPAREN = r'\('
     t_RPAREN = r'\)'
     t_LBRACKET = r'\['
@@ -79,6 +78,13 @@ class Lexer(object):
 
     def build(self, **kwargs):
         self.lexer = lex.lex(object=self, **kwargs)
+
+    def token(self):
+        return self.lexer.token()
+
+    def t_WHITESPACE(self, t):
+        r"""\n[ ]*"""
+        pass
 
     def t_INTEGER(self, t):
         r"""\d+"""
@@ -132,10 +138,10 @@ START procedure []
 END
 """
 
-lexer = Lexer()
-lexer.input(data)
-while True:
-    tok = lexer.lexer.token()
-    if not tok:
-        break
-    print(tok)
+# lexer = Lexer()
+# lexer.input(data)
+# while True:
+#     tok = lexer.lexer.token()
+#     if not tok:
+#         break
+#     print(tok)

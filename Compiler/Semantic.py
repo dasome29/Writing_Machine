@@ -1,6 +1,12 @@
 class Element:
     def __init__(self):
-        print("")
+        pass
+
+
+class Program(Element):
+    def __init__(self, procedures):
+        super().__init__()
+        print(procedures)
 
 
 class Function(Element):

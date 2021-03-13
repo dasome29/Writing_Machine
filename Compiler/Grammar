@@ -126,7 +126,7 @@ _____________________________________________________________________
                   | <expression>
 
 <condition> -> LPAREN <condition> RPAREN
-             | <condition> EQUAL <condition>
+             | <condition> DEQUAL <condition>
              | <condition> LESS <condition>
              | <condition> GREAT <condition>
              | <expression>

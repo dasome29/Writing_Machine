@@ -1,5 +1,6 @@
 import yacc
 from Semantic import *
+from Lexical import Lexer
 
 
 class Parser(object):
@@ -16,7 +17,7 @@ class Parser(object):
 
     def p_program(self, p):
         """program : compound_procedure"""
-        p[0] = p[1]
+        p[0] = Program(p[1])
         pass
 
     def p_compound_procedure(self, p):
@@ -91,7 +92,7 @@ class Parser(object):
         pass
 
     def p_function(self, p):
-        """function : START ID parameters compound_procedure END"""
+        """function : START ID LBRACKET parameters RBRACKET compound_procedure END"""
         p[0] = Function()
         pass
 
@@ -137,7 +138,7 @@ class Parser(object):
         pass
 
     def p_useColor(self, p):
-        """usecolor : USECOLOR expression SEMICOLON"""
+        """useColor : USECOLOR expression SEMICOLON"""
         p[0] = UseColor()
         pass
 
@@ -247,3 +248,21 @@ class Parser(object):
             p[0] = p[3] + p[5]
         elif p[1] == "Subtract":
             p[0] = p[3] - p[5]
+
+    def p_empty(self, p):
+        """empty :"""
+        pass
+
+    def p_error(self, p):
+        print("Syntax error ", p)
+
+
+
+data = """
+Def var1 = "Hello";
+Def var2 = 2;
+START procedure [] Put var1 = "Bye"; Add[var2, 5]; PosX 20;END
+"""
+
+parser = Parser(Lexer())
+result = parser.parse(data)
