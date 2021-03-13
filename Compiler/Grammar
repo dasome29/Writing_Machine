@@ -3,7 +3,6 @@ tokens:   LEFTPAREN
         | LEFTBRACKET
         | RIGHTBRACKET
         | COMMA
-        | POWER
         | LESS
         | GREAT
         | DEQUAL  // Double Equal
@@ -139,7 +138,7 @@ _____________________________________________________________________
            | Greater <expression_structure>
            | Smaller <expression_structure>
            | Equal <expression_structure>
-           | Not <expression_structure>
+           | Not <expression>
 
 <arithmetic> -> <product>
               | <power>
