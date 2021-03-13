@@ -6,8 +6,8 @@ class Lexer(object):
         self.lexer = lex.lex(object=self)
 
     reserved = {
-        'Start': 'START',
-        'End': 'END',
+        'START': 'START',
+        'END': 'END',
         'Def': 'DEF',
         'Put': 'PUT',
         'Add': 'ADD',
@@ -125,11 +125,11 @@ class Lexer(object):
 data = """
 Def var1 = "Hello";
 Def var2 = 2;
-Start procedure [] 
+START procedure [] 
     Put var1 = "Bye";
     Add[var2, 5];
     PosX 20;
-End
+END
 """
 
 lexer = Lexer()

@@ -82,7 +82,7 @@ _____________________________________________________________________
 <put> -> PUT ID EQUAL <expression> SEMICOLON
 
 <add> -> ADD LEFTBRACKET <expression> RIGHTBRACKET SEMICOLON
-       | ADD LEFTBRACKET <expression> COMMA <expression>
+       | ADD LEFTBRACKET <expression> COMMA <expression> RIGHTBRACKET SEMICOLON
 
 <continue> -> ContinueUp <expression> SEMICOLON
             | ContinueDown <expression> SEMICOLON
@@ -124,8 +124,6 @@ _____________________________________________________________________
 
 <expression_set> -> <expression> <expression_set>
                   | <expression>
-
-<expression_structure> ->
 
 <condition> -> LEFTPAREN <condition> RIGHTPAREN
              | <condition> EQUAL <condition>
