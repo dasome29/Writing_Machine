@@ -1,0 +1,159 @@
+tokens:   LEFTPAREN
+        | RIGHTPAREN
+        | LEFTBRACKET
+        | RIGHTBRACKET
+        | COMMA
+        | POWER
+        | LESS
+        | GREAT
+        | DEQUAL  // Double Equal
+        | EQUAL
+        | SEMICOLON
+        | ID
+
+        | START
+        | END
+        | DEF
+        | PUT
+        | ADD
+        | ContinueUp
+        | ContinueDown
+        | ContinueRight
+        | ContinueLeft
+        | Pos
+        | PosX
+        | PosY
+        | UseColor
+        | Down
+        | Up
+        | Begin
+        | Speed
+        | RUN
+        | Repeat
+        | If
+        | Elif
+        | Until
+        | While
+        | Equal
+        | And
+        | Or
+        | Not
+        | Greater
+        | Smaller
+        | Subtract
+        | Multiply
+        | Power
+        | Divide
+        | Addition
+        | Random
+
+
+_____________________________________________________________________
+<program> -> <compound_procedure>
+
+
+_____________________________________________________________________
+<compound_procedure> -> <procedure> <compound_procedure>
+                      | <procedure>
+
+
+_____________________________________________________________________
+<procedure -> <function>
+            | <variable_def>
+            | <put>
+            | <add>
+            | <continue>
+            | <pos>
+            | <useColor>
+            | <elevation>
+            | <begin>
+            | <speed>
+            | <run>
+            | <repeat>
+            | <if>
+            | <elif>
+            | <until>
+            | <while>
+            | empty
+
+<function> -> START ID <expression_set> <compound_procedure> END
+
+<variable_def> DEF ID EQUAL <expression> SEMICOLON
+
+<put> -> PUT ID EQUAL <expression> SEMICOLON
+
+<add> -> ADD LEFTBRACKET <expression> RIGHTBRACKET SEMICOLON
+       | ADD LEFTBRACKET <expression> COMMA <expression>
+
+<continue> -> ContinueUp <expression> SEMICOLON
+            | ContinueDown <expression> SEMICOLON
+            | ContinueRight <expression> SEMICOLON
+            | ContinueLeft <expression> SEMICOLON
+
+<pos> -> Pos LEFTBRACKET <expression> COMMA <expression> RIGHTBRACKET SEMICOLON
+       | PosX <expression> SEMICOLON
+       | PosY <expression> SEMICOLON
+
+<useColor> -> UseColor <expression> SEMICOLON
+
+<elevation> -> Down SEMICOLON
+             | Up SEMICOLON
+
+<begin> -> Begin SEMICOLON
+
+<speed> -> Speed <expression> SEMICOLON
+
+<run> -> Run LEFTBRACKET <compound_procedure> RIGHTBRACKET SEMICOLON
+
+<repeat> -> Repeat INTEGER LEFTBRACKET <compound_procedure> RIGHTBRACKET SEMICOLON
+
+<if> -> If <condition> LEFTBRACKET <compound_procedure> RIGHTBRACKET SEMICOLON
+
+<elif> -> Elif <condition> LEFTBRACKET <compound_procedure> RIGHTBRACKET
+                           LEFTBRACKET <compound_procedure> RIGHTBRACKET SEMICOLON
+
+<until> -> Until LEFTBRACKET <compound_procedure> RIGHTBRACKET LEFTBRACKET <condition> RIGHTBRACKET SEMICOLON
+
+<while> -> While LEFTBRACKET <condition> RIGHTBRACKET LEFTBRACKET <compound_procedure> RIGHTBRACKET SEMICOLON
+
+_____________________________________________________________________
+<expression> -> <condition>
+              | <boolean>
+              | <arithmetic>
+              | INTEGER | BOOL | STRING | ID
+              | empty
+
+<expression_set> -> <expression> <expression_set>
+                  | <expression>
+
+<expression_structure> -> LEFTPAREN <expression_set> RIGHTPAREN SEMICOLON
+
+<condition> -> LEFTPAREN <condition> RIGHTPAREN
+             | <condition> EQUAL <condition>
+             | <condition> LESS <condition>
+             | <condition> GREAT <condition>
+             | <expression>
+
+<boolean> -> And <expression_structure>
+           | Or <expression_structure>
+           | Greater <expression_structure>
+           | Smaller <expression_structure>
+           | Equal <expression_structure>
+           | Not <expression_structure>
+
+<arithmetic> -> <product>
+              | <power>
+              | <divide>
+              | <addition>
+              | <subtract>
+              | <random>
+
+<product> -> Multiply <expression_structure>
+<divide> -> Divide <expression_structure>
+<power> -> Power <expression_structure>
+<addition> -> Addition <expression_structure>
+<subtract> -> Subtract <expression_structure>
+
+
+
+
