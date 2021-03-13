@@ -1,7 +1,7 @@
-tokens:   LEFTPAREN
-        | RIGHTPAREN
-        | LEFTBRACKET
-        | RIGHTBRACKET
+tokens:   LPAREN
+        | RPAREN
+        | LBRACKET
+        | RBRACKET
         | COMMA
         | LESS
         | GREAT
@@ -81,15 +81,15 @@ _____________________________________________________________________
 
 <put> -> PUT ID EQUAL <expression> SEMICOLON
 
-<add> -> ADD LEFTBRACKET <expression> RIGHTBRACKET SEMICOLON
-       | ADD LEFTBRACKET <expression> COMMA <expression> RIGHTBRACKET SEMICOLON
+<add> -> ADD LBRACKET <expression> RBRACKET SEMICOLON
+       | ADD LBRACKET <expression> COMMA <expression> RBRACKET SEMICOLON
 
 <continue> -> ContinueUp <expression> SEMICOLON
             | ContinueDown <expression> SEMICOLON
             | ContinueRight <expression> SEMICOLON
             | ContinueLeft <expression> SEMICOLON
 
-<pos> -> Pos LEFTBRACKET <expression> COMMA <expression> RIGHTBRACKET SEMICOLON
+<pos> -> Pos LBRACKET <expression> COMMA <expression> RBRACKET SEMICOLON
        | PosX <expression> SEMICOLON
        | PosY <expression> SEMICOLON
 
@@ -102,18 +102,18 @@ _____________________________________________________________________
 
 <speed> -> Speed <expression> SEMICOLON
 
-<run> -> Run LEFTBRACKET <compound_procedure> RIGHTBRACKET SEMICOLON
+<run> -> Run LBRACKET <compound_procedure> RBRACKET SEMICOLON
 
-<repeat> -> Repeat INTEGER LEFTBRACKET <compound_procedure> RIGHTBRACKET SEMICOLON
+<repeat> -> Repeat INTEGER LBRACKET <compound_procedure> RBRACKET SEMICOLON
 
-<if> -> If <condition> LEFTBRACKET <compound_procedure> RIGHTBRACKET SEMICOLON
+<if> -> If <condition> LBRACKET <compound_procedure> RBRACKET SEMICOLON
 
-<elif> -> Elif <condition> LEFTBRACKET <compound_procedure> RIGHTBRACKET
-                           LEFTBRACKET <compound_procedure> RIGHTBRACKET SEMICOLON
+<elif> -> Elif <condition> LBRACKET <compound_procedure> RBRACKET
+                           LBRACKET <compound_procedure> RBRACKET SEMICOLON
 
-<until> -> Until LEFTBRACKET <compound_procedure> RIGHTBRACKET LEFTBRACKET <condition> RIGHTBRACKET SEMICOLON
+<until> -> Until LBRACKET <compound_procedure> RBRACKET LBRACKET <condition> RBRACKET SEMICOLON
 
-<while> -> While LEFTBRACKET <condition> RIGHTBRACKET LEFTBRACKET <compound_procedure> RIGHTBRACKET SEMICOLON
+<while> -> While LBRACKET <condition> RBRACKET LBRACKET <compound_procedure> RBRACKET SEMICOLON
 
 _____________________________________________________________________
 <expression> -> <condition>
@@ -125,31 +125,25 @@ _____________________________________________________________________
 <expression_set> -> <expression> <expression_set>
                   | <expression>
 
-<condition> -> LEFTPAREN <condition> RIGHTPAREN
+<condition> -> LPAREN <condition> RPAREN
              | <condition> EQUAL <condition>
              | <condition> LESS <condition>
              | <condition> GREAT <condition>
              | <expression>
 
-<boolean> -> And LEFTPAREN <expression_set> RIGHTPAREN SEMICOLON
-           | Or LEFTPAREN <expression_set> RIGHTPAREN SEMICOLON
-           | Greater LEFTPAREN <expression_set> RIGHTPAREN SEMICOLON
-           | Smaller LEFTPAREN <expression_set> RIGHTPAREN SEMICOLON
-           | Equal LEFTPAREN <expression_set> RIGHTPAREN SEMICOLON
-           | Not LEFTPAREN <expression> RIGHTPAREN SEMICOLON
+<boolean> -> And LPAREN <expression> COMMA <expression> RPAREN SEMICOLON
+           | Or LPAREN <expression> COMMA <expression> RPAREN SEMICOLON
+           | Greater LPAREN <expression> COMMA <expression> RPAREN SEMICOLON
+           | Smaller LPAREN <expression> COMMA <expression> RPAREN SEMICOLON
+           | Equal LPAREN <expression> COMMA <expression> RPAREN SEMICOLON
+           | Not LPAREN <expression> RPAREN SEMICOLON
 
-<arithmetic> -> <product>
-              | <power>
-              | <divide>
-              | <addition>
-              | <subtract>
-              | <random>
+<arithmetic> -> MULTIPLY LPAREN <expression_set> RPAREN SEMICOLON
+              | DIVIDE LPAREN <expression_set> RPAREN SEMICOLON
+              | POWER LPAREN <expression_set> RPAREN SEMICOLON
+              | ADDITION LPAREN <expression_set> RPAREN SEMICOLON
+              | SUBTRACT LPAREN <expression_set> RPAREN SEMICOLON
 
-<product> -> Multiply LEFTPAREN <expression_set> RIGHTPAREN SEMICOLON
-<divide> -> Divide LEFTPAREN <expression_set> RIGHTPAREN SEMICOLON
-<power> -> Power LEFTPAREN <expression_set> RIGHTPAREN SEMICOLON
-<addition> -> Addition LEFTPAREN <expression_set> RIGHTPAREN SEMICOLON
-<subtract> -> Subtract LEFTPAREN <expression_set> RIGHTPAREN SEMICOLON
 
 
 
