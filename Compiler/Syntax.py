@@ -4,16 +4,14 @@ from Lexical import Lexer
 
 
 class Parser(object):
-    start = "program"
-
     def __init__(self, lexer):
         self.parser = None
         self.lexer = lexer
         self.tokens = self.lexer.tokens
-        self.parser = yacc.yacc(module=self, start=self.start)
+        self.parser = yacc.yacc(module=self, start="program")
 
     def parse(self, data):
-        self.parser.parse(data, self.lexer)
+        return self.parser.parse(data, self.lexer)
 
     def p_program(self, p):
         """program : compound_procedure"""
@@ -36,6 +34,7 @@ class Parser(object):
 
     def p_procedure(self, p):
         """procedure : function
+                     | function_call
                      | variable_def
                      | put
                      | add
@@ -82,9 +81,8 @@ class Parser(object):
         pass
 
     def p_parameter_set(self, p):
-        """parameter_set : ID COMMA parameter_set
-                         | ID
-                         | empty"""
+        """parameter_set : expression COMMA parameter_set
+                         | expression"""
         try:
             p[0] = [p[1]] + p[3]
         except IndexError:
@@ -93,59 +91,60 @@ class Parser(object):
 
     def p_function(self, p):
         """function : START ID LBRACKET parameters RBRACKET compound_procedure END"""
-        p[0] = Function()
+        p[0] = Function(p[2], p[4], p[6])
+        pass
+
+    def p_function_call(self, p):
+        """function_call : ID LBRACKET parameters RBRACKET SEMICOLON"""
+        p[0] = FunctionCall(p[1], p[3])
         pass
 
     def p_variable_def(self, p):
         """variable_def : DEF ID EQUALTHAN expression SEMICOLON"""
-        p[0] = VariableDef()
+        p[0] = VariableDef(p[2], p[4])
         pass
 
     def p_put(self, p):
         """put : PUT ID EQUALTHAN expression SEMICOLON"""
-        p[0] = Put()
+        p[0] = Put(p[2], p[4])
         pass
 
     def p_add(self, p):
         """add : ADD LBRACKET ID COMMA expression RBRACKET SEMICOLON"""
-        p[0] = Add()
+        p[0] = Add(p[3], p[5])
 
     def p_add_one(self, p):
         """add : ADD LBRACKET ID RBRACKET SEMICOLON"""
-        p[0] = Add()
+        p[0] = Add(p[3])
 
     def p_continue(self, p):
         """continue : CONTINUEUP expression SEMICOLON
             | CONTINUEDOWN expression SEMICOLON
             | CONTINUERIGHT expression SEMICOLON
             | CONTINUELEFT expression SEMICOLON"""
-        p[0] = Continue()
+        p[0] = Continue(p[1], p[2])
         pass
 
     def p_pos(self, p):
         """pos : POS LBRACKET expression COMMA expression RBRACKET SEMICOLON"""
-        p[0] = Pos()
+        p[0] = Pos(p[3], p[5])
         pass
 
-    def p_posX(self, p):
-        """pos : POSX expression SEMICOLON"""
-        p[0] = Pos()
-        pass
-
-    def p_posY(self, p):
-        """pos : POSY expression SEMICOLON"""
-        p[0] = Pos()
+    def p_posAxis(self, p):
+        """pos : POSX expression SEMICOLON
+               | POSY expression SEMICOLON"""
+        p[0] = PosAxis(p[1], p[2])
         pass
 
     def p_useColor(self, p):
         """useColor : USECOLOR expression SEMICOLON"""
-        p[0] = UseColor()
+        p[0] = UseColor(p[2])
         pass
 
     def p_elevation(self, p):
         """elevation : UP SEMICOLON
                      | DOWN SEMICOLON"""
-        p[0] = Elevation()
+        p[0] = Elevation(p[1])
         pass
 
     def p_begin(self, p):
@@ -155,37 +154,37 @@ class Parser(object):
 
     def p_speed(self, p):
         """speed : SPEED expression SEMICOLON"""
-        p[0] = Speed()
+        p[0] = Speed(p[2])
         pass
 
     def p_run(self, p):
         """run : RUN LBRACKET compound_procedure RBRACKET SEMICOLON"""
-        p[0] = Run()
+        p[0] = Run(p[3])
         pass
 
     def p_repeat(self, p):
         """repeat : REPEAT expression LBRACKET compound_procedure RBRACKET SEMICOLON"""
-        p[0] = Repeat()
+        p[0] = Repeat(p[2], p[4])
         pass
 
     def p_if(self, p):
         """if : IF condition LBRACKET compound_procedure RBRACKET SEMICOLON"""
-        p[0] = If()
+        p[0] = If(p[2], p[4])
         pass
 
     def p_elif(self, p):
         """elif : ELIF condition LBRACKET compound_procedure RBRACKET LBRACKET compound_procedure RBRACKET SEMICOLON"""
-        p[0] = Elif()
+        p[0] = Elif(p[2], p[4], p[7])
         pass
 
     def p_until(self, p):
         """until : UNTIL LBRACKET compound_procedure RBRACKET LBRACKET condition RBRACKET SEMICOLON"""
-        p[0] = Until()
+        p[0] = Until(p[6], p[3])
         pass
 
     def p_while(self, p):
         """while : WHILE LBRACKET condition RBRACKET LBRACKET compound_procedure RBRACKET SEMICOLON"""
-        p[0] = While()
+        p[0] = While(p[3], p[6])
         pass
 
     def p_condition(self, p):
@@ -257,12 +256,32 @@ class Parser(object):
         print("Syntax error ", p)
 
 
-
 data = """
 Def var1 = "Hello";
 Def var2 = 2;
-START procedure [] Put var1 = "Bye"; Add[var2, 5]; PosX 20;END
+Def var3 = 4;
+Pos [var2, 0];
+START procedure [] 
+    Put var1 = "Bye"; 
+    Add[var2, Multiply(3, 5);]; 
+    PosX 20;
+    PosY 2;
+    ContinueUp var2;
+    ContinueDown var3;
+    Begin;
+    Speed var3;
+END
+START myFunc [num1, num2] 
+    PosX 40;
+    PosY 5;
+    ContinueUp num1;
+    ContinueDown num2;
+    Speed 50;
+END
+procedure [];
+myFunc [23, 40];
 """
 
 parser = Parser(Lexer())
 result = parser.parse(data)
+result.solve()

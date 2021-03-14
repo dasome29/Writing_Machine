@@ -75,7 +75,7 @@ _____________________________________________________________________
             | <while>
             | empty
 
-<function> -> START ID <expression_set> <compound_procedure> END
+<function> -> START ID LBRACKET <expression_set> RBRACKET <compound_procedure> END
 
 <variable_def> DEF ID EQUAL <expression> SEMICOLON
 
@@ -145,6 +145,18 @@ _____________________________________________________________________
               | SUBTRACT LPAREN <expression_set> RPAREN SEMICOLON
 
 
+_____________________________________________________________________
+_____________________________________________________________________
+_____________________________________________________________________
 
+Errors
 
+Lexical:
 
+Syntax:
+
+Semantic:
+    Variable not found
+    Wrong variable type
+    Invalid parameter
+    Invalid value
