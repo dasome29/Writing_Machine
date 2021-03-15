@@ -6,15 +6,24 @@ root = Tk()
 root.title('My Title')
 root.geometry('1200x660')
 
+
+# Set variable for open file name
+global openStatusName
+openStatusName = False
+
+
 def newFile():
     # Delete previous text
     myText.delete("1.0", END)
     # Update status bars
     root.title('New File')
     statusBar.config(text="New File")
+    global openStatusName
+    openStatusName = False
 
+    
 # Save as File
-def save_as_file():
+def saveAsFile():
     textFile = filedialog.asksaveasfilename(defaultextension=".*",initialdir="/Users/migue/Desktop/files_ide", title="Save File", filetypes=(("Text Files", "*.txt"), ("HTML Files", "*.html"), ("Python Files", "*.py"), ("All Files", "*.*")))
     if textFile:
         # Update status bars
@@ -29,6 +38,19 @@ def save_as_file():
         # Close the file
         textFile.close()
 
+# Save File
+def saveFile():
+    global openStatusName
+    if openStatusName:
+        # Save the file
+        textFile = open(openStatusName, 'w')
+        textFile.write(myText.get(1.0, END))
+        # Close the file
+        textFile.close()
+        statusBar.config(text="Saved: " +openStatusName)
+    else:
+        saveAsFile()
+
 def openFile():
     # Delete previous text
     myText.delete("1.0", END)
@@ -36,6 +58,12 @@ def openFile():
     # Grab Filename
     textFile = filedialog.askopenfilename(initialdir="/Users/migue/Desktop/files_ide", title="Open File", filetypes=(("Text Files", "*.txt"), ("HTML Files", "*.html"), ("Python Files", "*.py"), ("All Files", "*.*")))
     
+    # Check to see if there's a file name
+    if textFile:
+        # Make file name global to access later
+        global openStatusName
+        openStatusName = textFile
+
     # Update status bars
     name = textFile
     statusBar.config(text=name)
@@ -75,8 +103,8 @@ fileMenu = Menu(myMenu, tearoff=False)
 myMenu.add_cascade(label="File", menu=fileMenu)
 fileMenu.add_command(label="New", command=newFile)
 fileMenu.add_command(label="Open", command=openFile)
-fileMenu.add_command(label="Save")
-fileMenu.add_command(label="Save As", command=save_as_file)
+fileMenu.add_command(label="Save", command=saveFile)
+fileMenu.add_command(label="Save As", command=saveAsFile)
 fileMenu.add_separator()
 fileMenu.add_command(label="Exit", command=root.quit)
 
