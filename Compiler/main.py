@@ -57,7 +57,7 @@ myFunc [10, 40];
 """
 
 compiler = Compiler()
-output = compiler.compile(val2)
+output = compiler.compile(val)
 
 if output:
     for i in output:

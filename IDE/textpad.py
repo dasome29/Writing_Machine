@@ -6,7 +6,6 @@ root = Tk()
 root.title('My Title')
 root.geometry('1200x660')
 
-
 # Set variable for open file name
 global openStatusName
 openStatusName = False
@@ -21,14 +20,16 @@ def newFile():
     global openStatusName
     openStatusName = False
 
-    
+
 # Save as File
 def saveAsFile():
-    textFile = filedialog.asksaveasfilename(defaultextension=".*",initialdir="/Users/migue/Desktop/files_ide", title="Save File", filetypes=(("Text Files", "*.txt"), ("HTML Files", "*.html"), ("Python Files", "*.py"), ("All Files", "*.*")))
+    textFile = filedialog.asksaveasfilename(defaultextension=".*", initialdir="/Users/migue/Desktop/files_ide",
+                                            title="Save File", filetypes=(
+        ("Text Files", "*.txt"), ("HTML Files", "*.html"), ("Python Files", "*.py"), ("All Files", "*.*")))
     if textFile:
         # Update status bars
         name = textFile
-        statusBar.config(text="Saved: " +name)
+        statusBar.config(text="Saved: " + name)
         name = name.replace("/Users/migue/Desktop/files_ide/", "")
         root.title(name)
 
@@ -37,6 +38,7 @@ def saveAsFile():
         textFile.write(myText.get(1.0, END))
         # Close the file
         textFile.close()
+
 
 # Save File
 def saveFile():
@@ -47,17 +49,19 @@ def saveFile():
         textFile.write(myText.get(1.0, END))
         # Close the file
         textFile.close()
-        statusBar.config(text="Saved: " +openStatusName)
+        statusBar.config(text="Saved: " + openStatusName)
     else:
         saveAsFile()
+
 
 def openFile():
     # Delete previous text
     myText.delete("1.0", END)
 
     # Grab Filename
-    textFile = filedialog.askopenfilename(initialdir="/Users/migue/Desktop/files_ide", title="Open File", filetypes=(("Text Files", "*.txt"), ("HTML Files", "*.html"), ("Python Files", "*.py"), ("All Files", "*.*")))
-    
+    textFile = filedialog.askopenfilename(initialdir="/Users/migue/Desktop/files_ide", title="Open File", filetypes=(
+    ("Text Files", "*.txt"), ("HTML Files", "*.html"), ("Python Files", "*.py"), ("All Files", "*.*")))
+
     # Check to see if there's a file name
     if textFile:
         # Make file name global to access later
@@ -69,7 +73,7 @@ def openFile():
     statusBar.config(text=name)
     name = name.replace("/Users/migue/Desktop/files_ide/", "")
     root.title(name)
-    
+
     # Open the file
     textFile = open(textFile, 'r')
     stuff = textFile.read()
@@ -88,7 +92,8 @@ textScroll = Scrollbar(myFrame)
 myFrame.pack(side=RIGHT, fill=Y)
 
 # Create Text Box
-myText = Text(myFrame, width=97, height=25, font=("Helvetica",16), selectbackground="yellow", selectforeground="black", undo=True, yscrollcommand=textScroll.set)
+myText = Text(myFrame, width=97, height=25, font=("Helvetica", 16), selectbackground="yellow", selectforeground="black",
+              undo=True, yscrollcommand=textScroll.set)
 myText.pack()
 
 # Configure our Scrollbar
@@ -119,7 +124,6 @@ editMenu.add_command(label="Redo")
 
 # Add Status Bar to Bottom of App
 statusBar = Label(root, text='Ready', anchor=E)
-statusBar.pack(fill=X, side= BOTTOM, ipady=5)
-
+statusBar.pack(fill=X, side=BOTTOM, ipady=5)
 
 root.mainloop()
