@@ -17,7 +17,35 @@ myFrame.pack(side=RIGHT, fill=Y)
 # Create Text Box
 myText = Text(myFrame, width=97, height=25, font=("Helvetica",16), selectbackground="yellow", selectforeground="black", undo=True, yscrollcommand=textScroll.set)
 myText.pack()
-root.mainloop()
 
 # Configure our Scrollbar
 textScroll.config(command=myText.yview)
+
+# Create Menu
+myMenu = Menu(root)
+root.config(menu=myMenu)
+
+# Add File Menu
+fileMenu = Menu(myMenu, tearoff=False)
+myMenu.add_cascade(label="File", menu=fileMenu)
+fileMenu.add_command(label="New")
+fileMenu.add_command(label="Open")
+fileMenu.add_command(label="Save")
+fileMenu.add_separator()
+fileMenu.add_command(label="Exit", command=root.quit)
+
+# Add Edit Menu
+editMenu = Menu(myMenu, tearoff=False)
+myMenu.add_cascade(label="Edit", menu=editMenu)
+editMenu.add_command(label="Cut")
+editMenu.add_command(label="Copy")
+editMenu.add_command(label="Paste")
+editMenu.add_command(label="Undo")
+editMenu.add_command(label="Redo")
+
+# Add Status Bar to Bottom of App
+statusBar = Label(root, text='Ready     ', anchor=E)
+statusBar.pack(fill=X, side= BOTTOM, ipady=5)
+
+
+root.mainloop()
