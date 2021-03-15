@@ -217,20 +217,20 @@ class Parser(object):
                    | SMALLER LPAREN expression COMMA expression RPAREN SEMICOLON
                    | EQUAL LPAREN expression COMMA expression RPAREN SEMICOLON"""
         if p[1] == "And":
-            p[0] = p[3] and p[5]
+            p[0] = And(p[3], p[5])
         elif p[1] == "Or":
-            p[0] = p[3] or p[5]
+            p[0] = Or(p[3], p[5])
         elif p[1] == "Greater":
-            p[0] = p[3] > p[5]
+            p[0] = Greater(p[3], p[5])
         elif p[1] == "Less":
-            p[0] = p[3] < p[5]
+            p[0] = Less(p[3], p[5])
         elif p[1] == "Equal":
-            p[0] = p[3] == p[5]
+            p[0] = Equal(p[3], p[5])
         pass
 
     def p_boolean_not(self, p):
         """boolean : NOT LPAREN expression RPAREN SEMICOLON"""
-        p[0] = not p[3]
+        p[0] = Not(p[3])
         pass
 
     def p_arithmetic(self, p):
@@ -240,15 +240,15 @@ class Parser(object):
                       | ADDITION LPAREN expression COMMA expression RPAREN SEMICOLON
                       | SUBTRACT LPAREN expression COMMA expression RPAREN SEMICOLON"""
         if p[1] == "Multiply":
-            p[0] = p[3] * p[5]
+            p[0] = Multiply(p[3], p[5])
         elif p[1] == "Divide":
-            p[0] = p[3] // p[5]
+            p[0] = Divide(p[3], p[5])
         elif p[1] == "Power":
-            p[0] = p[3] ** p[5]
+            p[0] = Power(p[3], p[5])
         elif p[1] == "Addition":
-            p[0] = p[3] + p[5]
+            p[0] = Addition(p[3], p[5])
         elif p[1] == "Subtract":
-            p[0] = p[3] - p[5]
+            p[0] = Subtract(p[3], p[5])
 
     def p_empty(self, p):
         """empty :"""
@@ -259,7 +259,6 @@ class Parser(object):
             self.errors.append(f'Syntax error in line {p.lineno} in {p.value} token')
         else:
             self.errors.append("Syntax error: Invalid EOF\nMissing token at the end of a procedure")
-
 
 # data = """
 # Def var1 = "Hello";

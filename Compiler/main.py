@@ -48,7 +48,8 @@ END
 START myFunc [num1, num2] 
     PosX 40;
     PosY 5;
-    ContinueUp num1;
+    Add[var2];
+    ContinueUp var2;
     ContinueDown num2;
     Speed 50;
     Repeat var3 [procedure [];];

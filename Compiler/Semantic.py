@@ -78,7 +78,10 @@ class FunctionCall(Procedure):
     def setParameters(self, parameter_names):
         temp = []
         for i in range(len(parameter_names)):
-            temp.append({'name': parameter_names[i], 'value': self.parameters[i]})
+            value = self.parameters[i]
+            if isinstance(value, Expression):
+                value = value.solve(self.program, self.global_table)
+            temp.append({'name': parameter_names[i], 'value': value})
         self.table += temp
 
     def solve(self, program, scope_table):
@@ -112,6 +115,8 @@ class VariableDef(Procedure):
     def solve(self, program, scope_table):
         self.program = program
         self.global_table = scope_table + [self.table]
+        if isinstance(self.value, Expression):
+            self.value = self.value.solve(self.program, self.global_table)
         self.global_table[::-1][1].append({'name': self.name, 'value': self.value})
 
 
@@ -126,6 +131,8 @@ class Put(Procedure):
         self.global_table = scope_table + [self.table]
         if variableExist(self.global_table, self.var1):
             temp = getValue(self.global_table, self.var2)
+            if isinstance(temp, Expression):
+                temp = temp.solve(self.program, self.global_table)
             if type(temp) != Procedure:
                 if isinstance(temp, type(self.var1)):
                     changeValue(self.global_table, self.var1, temp)
@@ -154,6 +161,8 @@ class Add(Procedure):
                     temp = self.value
                     if variableExist(self.global_table, temp):
                         temp = getValue(self.global_table, temp)
+                    if isinstance(temp, Expression):
+                        temp = temp.solve(self.program, self.global_table)
                     if isinstance(temp, int):
                         changeValue(self.global_table, self.name, value + temp)
                     else:
@@ -178,8 +187,10 @@ class Continue(Procedure):
         self.global_table = scope_table + [self.table]
         error = ""
         temp = getValue(self.global_table, self.value)
-        if variableExist(self.global_table, self.value):
+        if not variableExist(self.global_table, self.value):
             error = "and was not found"
+        if isinstance(temp, Expression):
+            temp = temp.solve(self.program, self.global_table)
         if isinstance(temp, int):
             self.program.output(f'{self.name} {temp}')
         else:
@@ -196,26 +207,33 @@ class Pos(Procedure):
     def solve(self, program, scope_table):
         self.program = program
         self.global_table = scope_table + [self.table]
+        error = []
         buffer = [False, False]
-        temp_x = self.value_x
-        if isinstance(self.value_x, int):
+        temp_x = getValue(self.global_table, self.value_x)
+        if not variableExist(self.global_table, self.value_x):
+            error.append(f'{self.value_x}')
+        if isinstance(temp_x, Expression):
+            temp_x = temp_x.solve(self.program, self.global_table)
+        if isinstance(temp_x, int):
             buffer[0] = True
-        elif variableExist(self.global_table, self.value_x):
-            temp_x = getValue(self.global_table, self.value_x)
-            if isinstance(temp_x, int):
-                buffer[0] = True
-        temp_y = self.value_y
-        if isinstance(self.value_y, int):
+        temp_y = getValue(self.global_table, self.value_y)
+        if not variableExist(self.global_table, self.value_y):
+            error.append(f'{self.value_y}')
+        if isinstance(temp_y, Expression):
+            temp_y = temp_y.solve(self.program, self.global_table)
+        if isinstance(temp_y, int):
             buffer[1] = True
-        elif variableExist(self.global_table, self.value_y):
-            temp_y = getValue(self.global_table, self.value_y)
-            if isinstance(temp_y, int):
-                buffer[1] = True
         if buffer[0] and buffer[1]:
             self.program.output(f'Pos {temp_x} {temp_y}')
         else:
+            if error:
+                try:
+                    error = f', {error[0]} and {error[1]} were not found'
+                except IndexError:
+                    error = f', {error[0]} was not found'
+            error = ""
             self.program.error("Semantic", f'Pos', "Wrong variable type",
-                               f'values must be integers')
+                               f'values must be integers {error}')
 
 
 class PosAxis(Procedure):
@@ -229,8 +247,10 @@ class PosAxis(Procedure):
         self.global_table = scope_table + [self.table]
         error = ""
         temp = getValue(self.global_table, self.value)
-        if variableExist(self.global_table, self.value):
+        if not variableExist(self.global_table, self.value):
             error = "and was not found"
+        if isinstance(temp, Expression):
+            temp = temp.solve(self.program, self.global_table)
         if isinstance(temp, int):
             self.program.output(f'{self.name} {temp}')
         else:
@@ -250,6 +270,8 @@ class UseColor(Procedure):
         error = ""
         if not variableExist(self.global_table, self.value):
             error = "and was not found"
+        if isinstance(temp, Expression):
+            temp = temp.solve(self.program, self.global_table)
         if isinstance(temp, int):
             if 0 < temp <= self.program.colors:
                 self.program.output(f'UseColor {self.value}')
@@ -294,6 +316,8 @@ class Speed(Procedure):
         temp = getValue(self.global_table, self.value)
         if not variableExist(self.global_table, self.value):
             error = "and was not found"
+        if isinstance(temp, Expression):
+            temp = temp.solve(self.program, self.global_table)
         if isinstance(temp, int):
             self.program.output(f'Speed {temp}')
         else:
@@ -326,6 +350,8 @@ class Repeat(Procedure):
         temp = getValue(self.global_table, self.value)
         if variableExist(self.global_table, self.value):
             error = "and was not found"
+        if isinstance(temp, Expression):
+            temp = temp.solve(self.program, self.global_table)
         if isinstance(temp, int):
             for i in range(temp):
                 for j in self.procedures:
@@ -400,5 +426,163 @@ class Expression:
     def __init__(self):
         pass
 
-    def getValue(self):
-        return
+    def solve(self, program, scope_table):
+        pass
+
+
+class Arithmetic(Expression):
+    solved = False
+
+    def __init__(self, value1, value2):
+        super().__init__()
+        self.value1 = value1
+        self.value2 = value2
+
+    def solve(self, program, scope_table):
+        if not self.solved:
+            self.value1 = self.getValue(program, scope_table, self.value1)
+            self.value2 = self.getValue(program, scope_table, self.value2)
+
+    def getValue(self, program, scope_table, value):
+        error = ""
+        temp = getValue(scope_table, value)
+        if not variableExist(scope_table, value):
+            error = "and was not found"
+        if isinstance(temp, Arithmetic):
+            temp = temp.solve(program, scope_table)
+        if isinstance(temp, int):
+            return temp
+        else:
+            program.error("Semantic", f'Speed', "Invalid value",
+                          f'Variable {value} is not accepted {error}')
+        return 1
+
+
+class Addition(Arithmetic):
+    def __init__(self, value1, value2):
+        super().__init__(value1, value2)
+
+    def solve(self, program, scope_table):
+        super(Addition, self).solve(program, scope_table)
+        return self.value1 + self.value2
+
+
+class Subtract(Arithmetic):
+    def __init__(self, value1, value2):
+        super().__init__(value1, value2)
+
+    def solve(self, program, scope_table):
+        super(Subtract, self).solve(program, scope_table)
+        return self.value1 - self.value2
+
+
+class Multiply(Arithmetic):
+    def __init__(self, value1, value2):
+        super().__init__(value1, value2)
+
+    def solve(self, program, scope_table):
+        super(Multiply, self).solve(program, scope_table)
+        return self.value1 * self.value2
+
+
+class Power(Arithmetic):
+    def __init__(self, value1, value2):
+        super().__init__(value1, value2)
+
+    def solve(self, program, scope_table):
+        super(Power, self).solve(program, scope_table)
+        return self.value1 * self.value2
+
+
+class Divide(Arithmetic):
+    def __init__(self, value1, value2):
+        super().__init__(value1, value2)
+
+    def solve(self, program, scope_table):
+        super(Divide, self).solve(program, scope_table)
+        if not self.value2:
+            program.error("Semantic", "Divide", "Division by zero", "value2 ended up been zero")
+            return 1
+        return self.value1 // self.value2
+
+
+class Boolean(Expression):
+    solved = False
+
+    def __init__(self, value1, value2):
+        super().__init__()
+        self.value1 = value1
+        self.value2 = value2
+
+    def solve(self, program, scope_table):
+        if not self.solved:
+            self.value1 = self.getValue(program, scope_table, self.value1)
+            self.value2 = self.getValue(program, scope_table, self.value2)
+
+    def getValue(self, program, scope_table, value):
+        error = ""
+        temp = getValue(scope_table, value)
+        if isinstance(temp, Boolean):
+            temp = temp.solve(program, scope_table)
+        if not variableExist(scope_table, value):
+            error = "and was not found"
+        if isinstance(temp, bool):
+            return temp
+        else:
+            program.error("Semantic", f'Speed', "Invalid value",
+                          f'Variable {value} is not accepted {error}')
+        return 1
+
+
+class And(Boolean):
+    def __init__(self, value1, value2):
+        super().__init__(value1, value2)
+
+    def solve(self, program, scope_table):
+        super(And, self).solve(program, scope_table)
+        return self.value1 and self.value2
+
+
+class Or(Boolean):
+    def __init__(self, value1, value2):
+        super().__init__(value1, value2)
+
+    def solve(self, program, scope_table):
+        super(Or, self).solve(program, scope_table)
+        return self.value1 or self.value2
+
+
+class Greater(Boolean):
+    def __init__(self, value1, value2):
+        super().__init__(value1, value2)
+
+    def solve(self, program, scope_table):
+        super(Greater, self).solve(program, scope_table)
+        return self.value1 > self.value2
+
+
+class Less(Boolean):
+    def __init__(self, value1, value2):
+        super().__init__(value1, value2)
+
+    def solve(self, program, scope_table):
+        super(Less, self).solve(program, scope_table)
+        return self.value1 < self.value2
+
+
+class Equal(Boolean):
+    def __init__(self, value1, value2):
+        super().__init__(value1, value2)
+
+    def solve(self, program, scope_table):
+        super(Equal, self).solve(program, scope_table)
+        return self.value1 == self.value2
+
+
+class Not(Boolean):
+    def __init__(self, value1):
+        super().__init__(value1, None)
+
+    def solve(self, program, scope_table):
+        self.value1 = self.getValue(program, scope_table)
+        return not self.value1
