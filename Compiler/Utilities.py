@@ -38,7 +38,6 @@ def changeValue(array, name, value):
         if find:
             break
 
-
 # q = [{'name': 'Juan', 'value': 13}, {'name': 'Pedro', 'value': 1}, {'name': 'Paco', 'value': 20}]
 # x = [{'name': 'David', 'value': 15}, {'name': 'Nova', 'value': 7}, {'name': 'Fátima', 'value': 29}]
 # y = [{'name': 'Jose', 'value': 16}, {'name': 'Nuria', 'value': 5}, {'name': 'Astrid', 'value': 2}]

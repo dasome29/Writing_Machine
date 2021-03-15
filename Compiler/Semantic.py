@@ -2,8 +2,14 @@ from Utilities import *
 
 
 class Semantic:
-    def __init__(self, program):
-        print(program.solve())
+    errors = []
+
+    def analyze(self, program):
+        program.solve()
+        if program.errors:
+            self.errors = program.errors
+        else:
+            return program.output_list
 
 
 class Procedure:
@@ -32,7 +38,11 @@ class Program:
 
     def solve(self):
         for i in self.procedures:
-            i.solve(self, self.scope_table)
+            if i:
+                i.solve(self, self.scope_table)
+            else:
+                self.error("Semantic", "main", "Null procedure",
+                           "It's possible that a null object was found while compiling, check if your file was not empty")
             if self.errors:
                 return self.errors[0]
         for i in self.output_list:
@@ -40,7 +50,7 @@ class Program:
         return self.output_list
 
     def error(self, error_type, method, title, detail):
-        self.errors.append(f'{error_type} Error: {title} in {method} method\n{detail}')
+        self.errors.append(f'{error_type} Error: {title} in {method} method\n--- {detail}')
 
     def output(self, instruction):
         self.output_list.append(instruction)
@@ -236,9 +246,9 @@ class UseColor(Procedure):
     def solve(self, program, scope_table):
         self.program = program
         self.global_table = scope_table + [self.table]
-        temp = getValue(self.program, self.value)
+        temp = getValue(self.global_table, self.value)
         error = ""
-        if not variableExist(self.program, self.value):
+        if not variableExist(self.global_table, self.value):
             error = "and was not found"
         if isinstance(temp, int):
             if 0 < temp <= self.program.colors:
@@ -313,8 +323,8 @@ class Repeat(Procedure):
         self.program = program
         self.global_table = scope_table + [self.table]
         error = ""
-        temp = getValue(self.program, self.value)
-        if variableExist(self.program, self.value):
+        temp = getValue(self.global_table, self.value)
+        if variableExist(self.global_table, self.value):
             error = "and was not found"
         if isinstance(temp, int):
             for i in range(temp):

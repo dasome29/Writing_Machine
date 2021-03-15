@@ -104,7 +104,7 @@ _____________________________________________________________________
 
 <run> -> Run LBRACKET <compound_procedure> RBRACKET SEMICOLON
 
-<repeat> -> Repeat INTEGER LBRACKET <compound_procedure> RBRACKET SEMICOLON
+<repeat> -> Repeat <expression> LBRACKET <compound_procedure> RBRACKET SEMICOLON
 
 <if> -> If <condition> LBRACKET <compound_procedure> RBRACKET SEMICOLON
 

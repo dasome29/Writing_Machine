@@ -2,6 +2,8 @@ import lex
 
 
 class Lexer(object):
+    errors = []
+
     def __init__(self):
         self.lexer = lex.lex(object=self)
 
@@ -51,7 +53,6 @@ class Lexer(object):
                  'COMMA',
                  'GREATERTHAN',
                  'LESSTHAN',
-                 'DEQUAL',
                  'EQUALTHAN',
                  'SEMICOLON',
                  'INTEGER',
@@ -68,7 +69,6 @@ class Lexer(object):
     t_COMMA = r'[,]'
     t_GREATERTHAN = r'\>'
     t_LESSTHAN = r'\<'
-    t_DEQUAL = r'\=='
     t_EQUALTHAN = r'\='
     t_SEMICOLON = r'\;'
     t_ignore = r' '
@@ -83,7 +83,7 @@ class Lexer(object):
         return self.lexer.token()
 
     def t_WHITESPACE(self, t):
-        r"""\n[ ]*"""
+        r"""[ ]+"""
         pass
 
     def t_INTEGER(self, t):
@@ -114,29 +114,36 @@ class Lexer(object):
         temp = self.reserved.get(t.value, 'ID')
         if temp == "ID":
             if not t.value[0].islower():
-                print("Variable must start with lowercase.")
+                self.t_error(t)
         t.type = temp
         return t
 
     def t_newline(self, t):
-        r"""\n[ ]*\n]"""
+        r"""[\n]"""
         t.lexer.lineno += len(t.value)
         pass
 
     def t_error(self, t):
-        print(f'Found illegal character: {t.value}')
+        self.errors.append(f'Found illegal character in line {t.lexer.lineno}: \n"{t.value}"')
         t.lexer.skip(1)
 
+    def run(self, data):
+        self.input(data)
+        while True:
+            tok = self.lexer.token()
+            if not tok:
+                break
 
-data = """
-Def var1 = "Hello";
-Def var2 = 2;
-START procedure [] 
-    Put var1 = "Bye";
-    Add[var2, 5];
-    PosX 20;
-END
-"""
+
+# data = """
+# Def var1 = "Hello";
+# Def var2 = 2;
+# START procedure []
+#     Put var1 = "Bye";
+#     Add[var2, 5];
+#     PosX 20;
+# END
+# """
 
 # lexer = Lexer()
 # lexer.input(data)

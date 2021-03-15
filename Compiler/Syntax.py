@@ -4,6 +4,8 @@ from Lexical import Lexer
 
 
 class Parser(object):
+    errors = []
+
     def __init__(self, lexer):
         self.parser = None
         self.lexer = lexer
@@ -253,35 +255,39 @@ class Parser(object):
         pass
 
     def p_error(self, p):
-        print("Syntax error ", p)
+        if p:
+            self.errors.append(f'Syntax error in line {p.lineno} in {p.value} token')
+        else:
+            self.errors.append("Syntax error: Invalid EOF\nMissing token at the end of a procedure")
 
 
-data = """
-Def var1 = "Hello";
-Def var2 = 2;
-Def var3 = 4;
-Pos [var2, 0];
-START procedure [] 
-    Put var1 = "Bye"; 
-    Add[var2, Multiply(3, 5);]; 
-    PosX 20;
-    PosY 2;
-    ContinueUp var2;
-    ContinueDown var3;
-    Begin;
-    Speed var3;
-END
-START myFunc [num1, num2] 
-    PosX 40;
-    PosY 5;
-    ContinueUp num1;
-    ContinueDown num2;
-    Speed 50;
-END
-procedure [];
-myFunc [23, 40];
-"""
+# data = """
+# Def var1 = "Hello";
+# Def var2 = 2;
+# Def var3 = 4;
+# Pos [var2, 0];
+# START procedure []
+#     Put var1 = "Bye";
+#     Add[var2, Multiply(3, 5);];
+#     PosX 20;
+#     PosY 2;
+#     ContinueUp var2;
+#     ContinueDown var3;
+#     Begin;
+#     Speed var3;
+# END
+# START myFunc [num1, num2]
+#     PosX 40;
+#     PosY 5;
+#     ContinueUp num1;
+#     ContinueDown num2;
+#     Speed 50;
+#     Repeat var3 [procedure [];];
+# END
+# myFunc [10, 40];
+# """
 
-parser = Parser(Lexer())
-result = parser.parse(data)
-result.solve()
+# parser = Parser(Lexer())
+# result = parser.parse(data)
+# if result:
+#     print(result.solve())
