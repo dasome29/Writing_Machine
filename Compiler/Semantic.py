@@ -137,7 +137,7 @@ class Put(Procedure):
             if isinstance(temp, Expression):
                 temp = temp.solve(self.program, self.global_table)
             if type(temp) != Procedure:
-                if isinstance(temp, type(getValue(self.global_table, self.var1))):
+                if type(temp) == type(getValue(self.global_table, self.var1)):
                     changeValue(self.global_table, self.var1, temp)
                 else:
                     self.program.error("Semantic", "Put", "Wrong variable type",
@@ -159,7 +159,7 @@ class Add(Procedure):
         self.global_table = scope_table + [self.table]
         if variableExist(self.global_table, self.name):
             value = getValue(self.global_table, self.name)
-            if isinstance(value, int):
+            if type(value) == int:
                 if self.value:
                     temp = self.value
                     if variableExist(self.global_table, temp):
@@ -376,7 +376,7 @@ class If(Procedure):
         value = getValue(self.global_table, self.condition)
         if isinstance(value, Boolean):
             value = value.solve(self.program, self.global_table)
-        if isinstance(value, bool):
+        if type(value) == bool:
             if self.condition:
                 for i in self.procedures:
                     i.solve(self.program, self.global_table)
@@ -398,7 +398,7 @@ class Elif(Procedure):
         value = getValue(self.global_table, self.condition)
         if isinstance(value, Boolean):
             value = value.solve(self.program, self.global_table)
-        if isinstance(value, bool):
+        if type(value) == bool:
             temp = self.procedures_1
             if not value:
                 temp = self.procedures_2
@@ -418,7 +418,7 @@ class Until(Procedure):
     def solve(self, program, scope_table):
         self.program = program
         self.global_table = scope_table + [self.table]
-        if isinstance(self.condition, bool):
+        if type(self.condition) == bool:
             self.program.error("Semantic", "While", "Wrong variable type",
                                "Expected a variable of bool, not a raw boolean")
             pass
@@ -445,7 +445,7 @@ class Until(Procedure):
                 temp = value.solve(self.program, self.global_table)
                 count += 1
             pass
-        elif isinstance(value, bool):
+        elif type(value) == bool:
             while True:
                 if not value and count:
                     break
@@ -478,7 +478,7 @@ class While(Procedure):
     def solve(self, program, scope_table):
         self.program = program
         self.global_table = scope_table + [self.table]
-        if isinstance(self.condition, bool):
+        if type(self.condition) == bool:
             self.program.error("Semantic", "While", "Wrong variable type",
                                "Expected a variable of bool, not a raw boolean")
             pass
@@ -504,7 +504,7 @@ class While(Procedure):
                     break
                 count += 1
             pass
-        elif isinstance(value, bool):
+        elif type(value) == bool:
             while value:
                 if count > 5000000:
                     self.program.error("Semantic", "While", "Iteration limit",
