@@ -4,13 +4,14 @@ from tkinter import font
 
 root = Tk()
 root.title('My Title')
-root.geometry('1200x660')
+root.geometry('1000x660')
+root.resizable(width=False, height=False)
 
 # Set variable for open file name
 global openStatusName
 openStatusName = False
 
-
+# Create a new file
 def newFile():
     # Delete previous text
     myText.delete("1.0", END)
@@ -19,7 +20,6 @@ def newFile():
     statusBar.config(text="New File")
     global openStatusName
     openStatusName = False
-
 
 # Save as File
 def saveAsFile():
@@ -39,7 +39,6 @@ def saveAsFile():
         # Close the file
         textFile.close()
 
-
 # Save File
 def saveFile():
     global openStatusName
@@ -53,7 +52,7 @@ def saveFile():
     else:
         saveAsFile()
 
-
+# Open an existent file
 def openFile():
     # Delete previous text
     myText.delete("1.0", END)
@@ -84,17 +83,27 @@ def openFile():
 
 
 # Create Main Frame
-myFrame = Frame(root)
-myFrame.pack(pady=5)
+myFrame = Canvas(root, width=1200, height=660)
+myFrame.place(x=0,y=0)
+
+# Create text field for console
+
+myFrame.create_rectangle(2, 483,784, 0) # (x,y,x,y)
+
+
+
+# T = Text(myFrame, height=2, width=30)
+# T.place(x=5,y=600)
+# T.insert(END, "Algo de texto\nmas texto en la siguiente linea")
+# T.configure(state=DISABLED)
 
 # Create our Scrollbar for the Text Box
 textScroll = Scrollbar(myFrame)
 myFrame.pack(side=RIGHT, fill=Y)
 
 # Create Text Box
-myText = Text(myFrame, width=97, height=25, font=("Helvetica", 16), selectbackground="yellow", selectforeground="black",
-              undo=True, yscrollcommand=textScroll.set)
-myText.pack()
+myText = Text(myFrame, width=97, height=25, font=("Helvetica", 16), selectbackground="yellow", selectforeground="black", undo=True, yscrollcommand=textScroll.set)
+myText.place(x=0,y=0)
 
 # Configure our Scrollbar
 textScroll.config(command=myText.yview)
@@ -102,6 +111,8 @@ textScroll.config(command=myText.yview)
 # Create Menu
 myMenu = Menu(root)
 root.config(menu=myMenu)
+
+
 
 # Add File Menu
 fileMenu = Menu(myMenu, tearoff=False)
