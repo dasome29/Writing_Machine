@@ -2,6 +2,8 @@ from tkinter import *
 from tkinter import filedialog
 from tkinter import font
 
+from main import *
+
 
 root = Tk()
 root.title('My Title')
@@ -53,6 +55,7 @@ def saveFile():
     else:
         saveAsFile()
 
+
 # Open an existent file
 def openFile():
     # Delete previous text
@@ -83,7 +86,15 @@ def openFile():
     textFile.close()
 
 def executeCode():
-    print(myText.get("1.0",END))
+    compiler = Compiler()
+    
+    output = compiler.compile(myText.get("1.0",END))
+    T.configure(state=NORMAL)
+    T.delete("1.0",END)
+    if output:
+        for i in output:
+            T.insert(END, i)
+        T.configure(state=DISABLED)
 
 
 # Create Main Frame
@@ -116,7 +127,6 @@ myMenu = Menu(root)
 root.config(menu=myMenu)
 
 
-
 # Add File Menu
 fileMenu = Menu(myMenu, tearoff=False)
 myMenu.add_cascade(label="File", menu=fileMenu)
@@ -139,5 +149,6 @@ editMenu.add_command(label="Redo")
 # Add Status Bar to Bottom of App
 statusBar = Label(root, text='Ready', anchor=E)
 statusBar.pack(fill=X, side=BOTTOM, ipady=5)
+
 
 root.mainloop()
