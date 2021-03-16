@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import filedialog
 from tkinter import font
 
+
 root = Tk()
 root.title('My Title')
 root.geometry('1000x660')
@@ -81,15 +82,21 @@ def openFile():
     # Close the opend file
     textFile.close()
 
+def executeCode():
+    print(myText.get("1.0",END))
+
 
 # Create Main Frame
 myFrame = Canvas(root, width=1200, height=660)
 myFrame.place(x=0,y=0)
 
-myFrame.create_rectangle(0, 483,784, 800) # (x,y,x,y)
+# Add Button for compilation and execution
+btn_exec = Button(myFrame, text="Execute",fg="white", command=executeCode)
+btn_exec.place(x=900, y=10)
 
-T = Text(myFrame, height=12, width=110)
-T.place(x=2,y=484)
+# Add text field for console
+T = Text(myFrame, height=12, width=125)
+T.place(x=0,y=484)
 T.insert(END, "Algo de texto\nmas texto en la siguiente linea")
 T.configure(state=DISABLED)
 
@@ -100,7 +107,6 @@ myFrame.pack(side=RIGHT, fill=Y)
 # Create Text Box
 myText = Text(myFrame, width=97, height=25, font=("Helvetica", 16), selectbackground="yellow", selectforeground="black", undo=True, yscrollcommand=textScroll.set)
 myText.place(x=0,y=0)
-myFrame.create_rectangle(2, 483,784, 0) # (x,y,x,y)
 
 # Configure our Scrollbar
 textScroll.config(command=myText.yview)
