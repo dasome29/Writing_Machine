@@ -551,6 +551,7 @@ class Arithmetic(Expression):
     def getValue(self, program, scope_table, value):
         error = ""
         temp = getValue(scope_table, value)
+        print(type(temp))
         if not variableExist(scope_table, value):
             error = "and was not found"
         if isinstance(temp, Arithmetic):

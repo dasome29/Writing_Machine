@@ -39,7 +39,7 @@ START myFunc [num1, num2]
         -- Pinga
     ];
 END
-myFunc [10, 10 ];
+myFunc [10, 40 ];
 """
 
 compiler = Compiler()
