@@ -45,8 +45,6 @@ class Program:
                            "It's possible that a null object was found while compiling, check if your file was not empty")
             if self.errors:
                 return self.errors[0]
-        for i in self.output_list:
-            print(i)
         return self.output_list
 
     def error(self, error_type, method, title, detail):
@@ -82,7 +80,7 @@ class FunctionCall(Procedure):
             if isinstance(value, Expression):
                 value = value.solve(self.program, self.global_table)
             temp.append({'name': parameter_names[i], 'value': value})
-        self.table += temp
+        self.global_table += [temp]
 
     def solve(self, program, scope_table):
         self.program = program
@@ -94,7 +92,10 @@ class FunctionCall(Procedure):
                 if len(f_parameters) == len(self.parameters):
                     self.setParameters(f_parameters)
                     for i in temp.procedures:
-                        i.solve(program, self.global_table)
+                        if i:
+                            i.solve(program, self.global_table)
+                        if self.program.errors:
+                            break
                 else:
                     self.program.error("Semantic", f'{self.name}', "Invalid parameters",
                                        f"""Didn't provide de same amount of parameters as in the definition""")
@@ -123,18 +124,19 @@ class VariableDef(Procedure):
 class Put(Procedure):
     def __init__(self, var1, var2):
         super().__init__()
-        self.var2 = var2
         self.var1 = var1
+        self.var2 = var2
 
     def solve(self, program, scope_table):
         self.program = program
         self.global_table = scope_table + [self.table]
         if variableExist(self.global_table, self.var1):
             temp = getValue(self.global_table, self.var2)
+
             if isinstance(temp, Expression):
                 temp = temp.solve(self.program, self.global_table)
             if type(temp) != Procedure:
-                if isinstance(temp, type(self.var1)):
+                if isinstance(temp, type(getValue(self.global_table, self.var1))):
                     changeValue(self.global_table, self.var1, temp)
                 else:
                     self.program.error("Semantic", "Put", "Wrong variable type",
@@ -370,9 +372,16 @@ class If(Procedure):
     def solve(self, program, scope_table):
         self.program = program
         self.global_table = scope_table + [self.table]
-        if self.condition:
-            for i in self.procedures:
-                i.solve(self.program, self.global_table)
+        value = getValue(self.global_table, self.condition)
+        if isinstance(value, Boolean):
+            value = value.solve(self.program, self.global_table)
+        if isinstance(value, bool):
+            if self.condition:
+                for i in self.procedures:
+                    i.solve(self.program, self.global_table)
+        else:
+            self.program.error("Semantic", f'If', "Invalid condition",
+                               f'Variable {self.condition} is not accepted')
 
 
 class Elif(Procedure):
@@ -385,11 +394,18 @@ class Elif(Procedure):
     def solve(self, program, scope_table):
         self.program = program
         self.global_table = scope_table + [self.table]
-        temp = self.procedures_1
-        if not self.condition:
-            temp = self.procedures_2
-        for i in temp:
-            i.solve(self.program, self.global_table)
+        value = getValue(self.global_table, self.condition)
+        if isinstance(value, Boolean):
+            value = value.solve(self.program, self.global_table)
+        if isinstance(value, bool):
+            temp = self.procedures_1
+            if not value:
+                temp = self.procedures_2
+            for i in temp:
+                i.solve(self.program, self.global_table)
+        else:
+            self.program.error("Semantic", f'Elif', "Invalid condition",
+                               f'Variable {self.condition} is not accepted')
 
 
 class Until(Procedure):
@@ -401,11 +417,56 @@ class Until(Procedure):
     def solve(self, program, scope_table):
         self.program = program
         self.global_table = scope_table + [self.table]
-        while True:
-            for i in self.procedures:
-                i.solve(self.program, self.global_table)
-            if self.condition:
-                break
+        if isinstance(self.condition, bool):
+            self.program.error("Semantic", "While", "Wrong variable type",
+                               "Expected a variable of bool, not a raw boolean")
+            pass
+        value = getValue(self.global_table, self.condition)
+        flag = False
+        count = 0
+        temp = True
+        if isinstance(value, Boolean):
+            while True:
+                if not temp:
+                    break
+                if count > 50000000:
+                    self.program.error("Semantic", "While", "Iteration limit",
+                                       "Your While loop exceeded 5x10^7 iterations.")
+                    break
+                for i in self.procedures:
+                    if i:
+                        i.solve(self.program, self.global_table)
+                    if self.program.errors:
+                        flag = True
+                        break
+                if flag:
+                    break
+                temp = value.solve(self.program, self.global_table)
+                count += 1
+            pass
+        elif isinstance(value, bool):
+            while True:
+                if not value and count:
+                    break
+                if count > 5000000:
+                    self.program.error("Semantic", "While", "Iteration limit",
+                                       "Your While loop exceeded 5x10^6 iterations.")
+                    break
+                for i in self.procedures:
+                    if i:
+                        i.solve(self.program, self.global_table)
+                    if self.program.errors:
+                        flag = True
+                        break
+                if flag:
+                    break
+
+                value = getValue(self.global_table, self.condition)
+                count += 1
+            pass
+        else:
+            self.program.error("Semantic", "While", "Wrong variable type",
+                               "Condition on While loop must be a boolean variable or a boolean expression")
 
 
 class While(Procedure):
@@ -417,9 +478,53 @@ class While(Procedure):
     def solve(self, program, scope_table):
         self.program = program
         self.global_table = scope_table + [self.table]
-        while self.condition:
-            for i in self.procedures:
-                i.solve(self.program, self.global_table)
+        if isinstance(self.condition, bool):
+            self.program.error("Semantic", "While", "Wrong variable type",
+                               "Expected a variable of bool, not a raw boolean")
+            pass
+        value = getValue(self.global_table, self.condition)
+        flag = False
+        count = 0
+        if isinstance(value, Boolean):
+            while True:
+                if count > 50000000:
+                    self.program.error("Semantic", "While", "Iteration limit",
+                                       "Your While loop exceeded 5x10^7 iterations.")
+                    break
+                for i in self.procedures:
+                    if i:
+                        i.solve(self.program, self.global_table)
+                    if self.program.errors:
+                        flag = True
+                        break
+                if flag:
+                    break
+                temp = value.solve(self.program, self.global_table)
+                if not temp:
+                    break
+                count += 1
+            pass
+        elif isinstance(value, bool):
+            while value:
+                if count > 5000000:
+                    self.program.error("Semantic", "While", "Iteration limit",
+                                       "Your While loop exceeded 5x10^6 iterations.")
+                    break
+                for i in self.procedures:
+                    if i:
+                        i.solve(self.program, self.global_table)
+                    if self.program.errors:
+                        flag = True
+                        break
+                if flag:
+                    break
+
+                value = getValue(self.global_table, self.condition)
+                count += 1
+            pass
+        else:
+            self.program.error("Semantic", "While", "Wrong variable type",
+                               "Condition on While loop must be a boolean variable or a boolean expression")
 
 
 class Expression:
@@ -508,28 +613,30 @@ class Divide(Arithmetic):
 
 class Boolean(Expression):
     solved = False
+    table = []
 
-    def __init__(self, value1, value2):
+    def __init__(self, name1, name2):
         super().__init__()
-        self.value1 = value1
-        self.value2 = value2
+        self.name1 = name1
+        self.name2 = name2
+        self.value1 = None
+        self.value2 = None
 
     def solve(self, program, scope_table):
-        if not self.solved:
-            self.value1 = self.getValue(program, scope_table, self.value1)
-            self.value2 = self.getValue(program, scope_table, self.value2)
+        self.value1 = self.getValue(program, scope_table, self.name1)
+        self.value2 = self.getValue(program, scope_table, self.name2)
 
     def getValue(self, program, scope_table, value):
         error = ""
         temp = getValue(scope_table, value)
-        if isinstance(temp, Boolean):
+        if isinstance(temp, Expression):
             temp = temp.solve(program, scope_table)
         if not variableExist(scope_table, value):
             error = "and was not found"
-        if isinstance(temp, bool):
+        if isinstance(temp, bool) or isinstance(temp, int) or isinstance(temp, str):
             return temp
         else:
-            program.error("Semantic", f'Speed', "Invalid value",
+            program.error("Semantic", f'Boolean', "Invalid value",
                           f'Variable {value} is not accepted {error}')
         return 1
 
@@ -558,16 +665,41 @@ class Greater(Boolean):
 
     def solve(self, program, scope_table):
         super(Greater, self).solve(program, scope_table)
-        return self.value1 > self.value2
+        if isinstance(self.value1, int) and isinstance(self.value2, int):
+            return self.value1 > self.value2
+        else:
+            error = []
+            if not isinstance(self.value1, int):
+                error.append(f'{self.name1} variable has {type(self.value1)}')
+            if not isinstance(self.value2, int):
+                error.append(f'{self.name2} variable has {type(self.value2)}')
+            try:
+                program.error("Semantic", "Greater", "Invalid variable type",
+                              f'{error[0]} and {error[1]}, expected int in both')
+            except IndexError:
+                program.error("Semantic", "Greater", "Invalid variable type", f'{error[0]}, expected int')
 
 
-class Less(Boolean):
+class Smaller(Boolean):
     def __init__(self, value1, value2):
         super().__init__(value1, value2)
 
     def solve(self, program, scope_table):
-        super(Less, self).solve(program, scope_table)
-        return self.value1 < self.value2
+        super(Smaller, self).solve(program, scope_table)
+        if isinstance(self.value1, int) and isinstance(self.value2, int):
+            return self.value1 < self.value2
+        else:
+            error = []
+            if not isinstance(self.value1, int):
+                error.append(f'{self.name1} variable has {type(self.value1)}')
+            if not isinstance(self.value2, int):
+                error.append(f'{self.name2} variable has {type(self.value2)}')
+            try:
+                program.error("Semantic", "Smaller", "Invalid variable type",
+                              f'{error[0]} and {error[1]}, expected int in both')
+            except IndexError:
+                program.error("Semantic", "Smaller", "Invalid variable type", f'{error[0]}, expected int')
+            pass
 
 
 class Equal(Boolean):
@@ -584,5 +716,10 @@ class Not(Boolean):
         super().__init__(value1, None)
 
     def solve(self, program, scope_table):
-        self.value1 = self.getValue(program, scope_table)
-        return not self.value1
+        self.value1 = self.getValue(program, scope_table, self.name1)
+        if isinstance(self.value1, bool):
+            return not self.value1
+        else:
+            program.error("Semantic", "Smaller", "Invalid variable type",
+                          f'{self.name1} variable has {type(self.value1)}, expected int')
+            pass

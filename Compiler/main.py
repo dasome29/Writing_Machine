@@ -25,34 +25,17 @@ class Compiler:
                 else:
                     return result
 
-        return None
-
 
 val2 = ""
 
 val = """
-Def var1 = "Hello";
-Def var2 = 2;
-Def var3 = 4;
-Pos [var2, 0];
-START procedure [] 
-    Put var1 = "Bye"; 
-    Add[var2, Multiply(3, 5);]; 
-    PosX 20;
-    PosY 2;
-    ContinueUp var2;
-    ContinueDown var3;
-    Begin;
-    Speed var3;
-END
+Def var1 = 10;
+Def var2 = False;
 START myFunc [num1, num2] 
-    PosX 40;
-    PosY 5;
-    Add[var2];
-    ContinueUp var2;
-    ContinueDown num2;
-    Speed 50;
-    Repeat var3 [procedure [];];
+    While [Smaller(num1, num2);] [
+        Elif Equal(num1, Multiply(3, 5);); [PosX num1;] [PosY num1;];
+        Add[num1];
+    ];
 END
 myFunc [10, 40];
 """
