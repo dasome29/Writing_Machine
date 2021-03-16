@@ -98,10 +98,14 @@ class Lexer(object):
     def t_BOOL(self, t):
         r"""True|False"""
         try:
-            t.value = bool(t.value)
+            if t.value == "True":
+                t.value = True
+            else:
+                t.value = False
         except ValueError:
             print("Didn't find a boolean")
             t.value = False
+
         return t
 
     def t_STRING(self, t):
@@ -126,6 +130,7 @@ class Lexer(object):
     def t_error(self, t):
         self.errors.append(f'Found illegal character in line {t.lexer.lineno}: \n"{t.value}"')
         t.lexer.skip(1)
+        pass
 
     def run(self, data):
         self.input(data)

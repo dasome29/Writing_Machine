@@ -180,12 +180,12 @@ class Parser(object):
         pass
 
     def p_until(self, p):
-        """until : UNTIL LBRACKET compound_procedure RBRACKET LBRACKET condition RBRACKET SEMICOLON"""
+        """until : UNTIL LBRACKET compound_procedure RBRACKET LBRACKET expression RBRACKET SEMICOLON"""
         p[0] = Until(p[6], p[3])
         pass
 
     def p_while(self, p):
-        """while : WHILE LBRACKET condition RBRACKET LBRACKET compound_procedure RBRACKET SEMICOLON"""
+        """while : WHILE LBRACKET expression RBRACKET LBRACKET compound_procedure RBRACKET SEMICOLON"""
         p[0] = While(p[3], p[6])
         pass
 
@@ -222,8 +222,8 @@ class Parser(object):
             p[0] = Or(p[3], p[5])
         elif p[1] == "Greater":
             p[0] = Greater(p[3], p[5])
-        elif p[1] == "Less":
-            p[0] = Less(p[3], p[5])
+        elif p[1] == "Smaller":
+            p[0] = Smaller(p[3], p[5])
         elif p[1] == "Equal":
             p[0] = Equal(p[3], p[5])
         pass
