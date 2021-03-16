@@ -3,6 +3,7 @@ from Syntax import *
 from Semantic import *
 
 
+
 class Compiler:
     def compile(self, data):
         lexer = Lexer()

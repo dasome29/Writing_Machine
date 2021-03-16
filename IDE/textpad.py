@@ -86,16 +86,12 @@ def openFile():
 myFrame = Canvas(root, width=1200, height=660)
 myFrame.place(x=0,y=0)
 
-# Create text field for console
+myFrame.create_rectangle(0, 483,784, 800) # (x,y,x,y)
 
-myFrame.create_rectangle(2, 483,784, 0) # (x,y,x,y)
-
-
-
-# T = Text(myFrame, height=2, width=30)
-# T.place(x=5,y=600)
-# T.insert(END, "Algo de texto\nmas texto en la siguiente linea")
-# T.configure(state=DISABLED)
+T = Text(myFrame, height=12, width=110)
+T.place(x=2,y=484)
+T.insert(END, "Algo de texto\nmas texto en la siguiente linea")
+T.configure(state=DISABLED)
 
 # Create our Scrollbar for the Text Box
 textScroll = Scrollbar(myFrame)
@@ -104,6 +100,7 @@ myFrame.pack(side=RIGHT, fill=Y)
 # Create Text Box
 myText = Text(myFrame, width=97, height=25, font=("Helvetica", 16), selectbackground="yellow", selectforeground="black", undo=True, yscrollcommand=textScroll.set)
 myText.place(x=0,y=0)
+myFrame.create_rectangle(2, 483,784, 0) # (x,y,x,y)
 
 # Configure our Scrollbar
 textScroll.config(command=myText.yview)
