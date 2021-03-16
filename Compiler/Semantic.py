@@ -1,4 +1,5 @@
 from Utilities import *
+from random import randint
 
 
 class Semantic:
@@ -460,7 +461,6 @@ class Until(Procedure):
                         break
                 if flag:
                     break
-
                 value = getValue(self.global_table, self.condition)
                 count += 1
             pass
@@ -487,6 +487,9 @@ class While(Procedure):
         count = 0
         if isinstance(value, Boolean):
             while True:
+                temp = value.solve(self.program, self.global_table)
+                if not temp:
+                    break
                 if count > 50000000:
                     self.program.error("Semantic", "While", "Iteration limit",
                                        "Your While loop exceeded 5x10^7 iterations.")
@@ -498,9 +501,6 @@ class While(Procedure):
                         flag = True
                         break
                 if flag:
-                    break
-                temp = value.solve(self.program, self.global_table)
-                if not temp:
                     break
                 count += 1
             pass
@@ -558,7 +558,7 @@ class Arithmetic(Expression):
         if isinstance(temp, int):
             return temp
         else:
-            program.error("Semantic", f'Speed', "Invalid value",
+            program.error("Semantic", f'{type(self).__name__}', "Invalid value",
                           f'Variable {value} is not accepted {error}')
         return 1
 
@@ -611,6 +611,21 @@ class Divide(Arithmetic):
         return self.value1 // self.value2
 
 
+class Random(Arithmetic):
+    def __init__(self, value1):
+        super().__init__(value1, None)
+
+    def solve(self, program, scope_table):
+        self.value1 = self.getValue(program, scope_table, self.value1)
+        if isinstance(self.value1, Arithmetic):
+            self.value1 = self.value1.solve(program, scope_table)
+        if isinstance(self.value1, int):
+            return randint(0, self.value1)
+        else:
+            program.error("Semantic", f'{type(self).__name__}', "Invalid variable type",
+                          f'Input of Random must be an integer')
+
+
 class Boolean(Expression):
     solved = False
     table = []
@@ -636,7 +651,7 @@ class Boolean(Expression):
         if isinstance(temp, bool) or isinstance(temp, int) or isinstance(temp, str):
             return temp
         else:
-            program.error("Semantic", f'Boolean', "Invalid value",
+            program.error("Semantic", f'{type(self).__name__}', "Invalid value",
                           f'Variable {value} is not accepted {error}')
         return 1
 

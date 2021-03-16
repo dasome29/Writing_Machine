@@ -35,9 +35,10 @@ START myFunc [num1, num2]
     While [Smaller(num1, num2);] [
         Elif Equal(num1, Multiply(3, 5);); [PosX num1;] [PosY num1;];
         Add[num1];
+        -- Pinga
     ];
 END
-myFunc [10, 40];
+myFunc [10, 10 ];
 """
 
 compiler = Compiler()

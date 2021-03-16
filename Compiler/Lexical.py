@@ -122,6 +122,10 @@ class Lexer(object):
         t.type = temp
         return t
 
+    def t_COMMENT(self, t):
+        r"""\--.*"""
+        pass
+
     def t_newline(self, t):
         r"""[\n]"""
         t.lexer.lineno += len(t.value)
