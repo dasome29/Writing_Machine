@@ -68,15 +68,6 @@ class Parser(object):
         p[0] = p[1]
         pass
 
-    def p_expression_set(self, p):
-        """expression_set : expression expression_set
-                          | expression"""
-        try:
-            p[0] = [p[1]] + p[2]
-        except IndexError:
-            p[0] = [p[1]]
-        pass
-
     def p_parameters(self, p):
         """parameters : parameter_set"""
         p[0] = p[1]
@@ -249,6 +240,12 @@ class Parser(object):
             p[0] = Addition(p[3], p[5])
         elif p[1] == "Subtract":
             p[0] = Subtract(p[3], p[5])
+        pass
+
+    def p_arithmetic_random(self, p):
+        """arithmetic : RANDOM LPAREN expression RPAREN SEMICOLON"""
+        p[0] = Random(p[3])
+        pass
 
     def p_empty(self, p):
         """empty :"""
