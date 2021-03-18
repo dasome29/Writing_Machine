@@ -86,15 +86,18 @@ def openFile():
     textFile.close()
 
 def executeCode():
-    compiler = Compiler()
-    
-    output = compiler.compile(myText.get("1.0",END))
-    T.configure(state=NORMAL)
     T.delete("1.0",END)
+
+    compiler = Compiler()
+    input=myText.get("1.0",END)
+    output = compiler.compile(input)
+
+    # print("Input: " + input)
+    # print("Output: "+output)
+
     if output:
         for i in output:
             T.insert(END, i)
-        T.configure(state=DISABLED)
 
 
 # Create Main Frame
@@ -108,8 +111,8 @@ btn_exec.place(x=0, y=0)
 # Add text field for console
 T = Text(myFrame, height=12, width=125)
 T.place(x=0,y=484)
-T.insert(END, "Algo de texto\nmas texto en la siguiente linea")
-T.configure(state=DISABLED)
+T.insert(END, "Welcome to Writing Machine!")
+#T.configure(state=DISABLED)
 
 # Create our Scrollbar for the Text Box
 textScroll = Scrollbar(myFrame)
