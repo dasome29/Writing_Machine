@@ -102,7 +102,7 @@ myFrame = Canvas(root, width=1200, height=660)
 myFrame.place(x=0,y=0)
 
 # Add Button for compilation and execution
-btn_exec = Button(myFrame, text="Execute",fg="white", command=executeCode)
+btn_exec = Button(myFrame, text="Execute",fg="black", command=executeCode)
 btn_exec.place(x=900, y=10)
 
 # Add text field for console
