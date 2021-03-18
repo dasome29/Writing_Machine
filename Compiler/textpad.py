@@ -119,6 +119,7 @@ myFrame.pack(side=RIGHT, fill=Y)
 myText = Text(myFrame, width=97, height=25, font=("Helvetica", 16), selectbackground="yellow", selectforeground="black", undo=True, yscrollcommand=textScroll.set)
 myText.place(x=0,y=0)
 
+
 # Configure our Scrollbar
 textScroll.config(command=myText.yview)
 
