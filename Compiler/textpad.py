@@ -102,8 +102,8 @@ myFrame = Canvas(root, width=1200, height=660)
 myFrame.place(x=0,y=0)
 
 # Add Button for compilation and execution
-btn_exec = Button(myFrame, text="Execute",fg="black", command=executeCode)
-btn_exec.place(x=0, y=0)
+btn_exec = Button(myFrame, text="Execute",fg="white", command=executeCode)
+btn_exec.place(x=900, y=10)
 
 # Add text field for console
 T = Text(myFrame, height=12, width=125)
@@ -116,8 +116,8 @@ textScroll = Scrollbar(myFrame)
 myFrame.pack(side=RIGHT, fill=Y)
 
 # Create Text Box
-myText = Text(myFrame, width=83, height=18, font=("Helvetica", 16), selectbackground="yellow", selectforeground="black", undo=True, yscrollcommand=textScroll.set)
-myText.place(x=0,y=25)
+myText = Text(myFrame, width=97, height=25, font=("Helvetica", 16), selectbackground="yellow", selectforeground="black", undo=True, yscrollcommand=textScroll.set)
+myText.place(x=0,y=0)
 
 # Configure our Scrollbar
 textScroll.config(command=myText.yview)
