@@ -6,6 +6,8 @@ class Semantic:
     errors = []
 
     def analyze(self, program):
+        program.output_list = []
+        program.errors = []
         program.solve()
         if program.errors:
             self.errors = program.errors
