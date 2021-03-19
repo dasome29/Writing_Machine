@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import filedialog
 from tkinter import font
+import getpass
 
 from main import *
 
@@ -13,6 +14,9 @@ root.resizable(width=False, height=False)
 global openStatusName
 openStatusName = False
 
+def getPath():
+    user = getpass.getuser()
+    print(user)
 
 # Create a new file
 def newFile():
@@ -46,14 +50,11 @@ def compile(data):
 
 # Save as File
 def saveAsFile():
-    textFile = filedialog.asksaveasfilename(defaultextension=".*", initialdir="/Users/migue/Desktop/files_ide",
-                                            title="Save File", filetypes=(
-            ("Text Files", "*.txt"), ("HTML Files", "*.html"), ("Python Files", "*.py"), ("All Files", "*.*")))
+    textFile = filedialog.asksaveasfilename(defaultextension=".*",title="Save File", filetypes=(("Text Files", "*.txt"), ("HTML Files", "*.html"), ("Python Files", "*.py"), ("All Files", "*.*")))
     if textFile:
         # Update status bars
         name = textFile
         statusBar.config(text="Saved: " + name)
-        name = name.replace("/Users/migue/Desktop/files_ide/", "")
         root.title(name)
 
         # Save the file
@@ -83,7 +84,7 @@ def openFile():
     myText.delete("1.0", END)
 
     # Grab Filename
-    textFile = filedialog.askopenfilename(initialdir="/Users/migue/Desktop/files_ide", title="Open File", filetypes=(
+    textFile = filedialog.askopenfilename(title="Open File", filetypes=(
         ("Text Files", "*.txt"), ("HTML Files", "*.html"), ("Python Files", "*.py"), ("All Files", "*.*")))
 
     # Check to see if there's a file name
@@ -95,7 +96,6 @@ def openFile():
     # Update status bars
     name = textFile
     statusBar.config(text=name)
-    name = name.replace("/Users/migue/Desktop/files_ide/", "")
     root.title(name)
 
     # Open the file
@@ -128,6 +128,9 @@ myFrame.place(x=0, y=0)
 # Add Button for compilation and execution
 btn_exec = Button(myFrame, text="Execute", fg="black", command=executeCode)
 btn_exec.place(x=0, y=0)
+
+btn_algo = Button(myFrame, text="algo", fg="black", command=getPath)
+btn_algo.place(x=85, y=0)
 
 # Add text field for console
 T = Text(myFrame, height=12, width=125)
