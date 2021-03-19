@@ -50,7 +50,8 @@ def compile(data):
 
 # Save as File
 def saveAsFile():
-    textFile = filedialog.asksaveasfilename(defaultextension=".*",title="Save File", filetypes=(("Text Files", "*.txt"), ("HTML Files", "*.html"), ("Python Files", "*.py"), ("All Files", "*.*")))
+    textFile = filedialog.asksaveasfilename(title="Save File", filetypes=(("Text Files", "*.txt"), ("HTML Files", "*.html"), ("Python Files", "*.py"), ("All Files", "*.*")))
+    print(textFile)
     if textFile:
         # Update status bars
         name = textFile
