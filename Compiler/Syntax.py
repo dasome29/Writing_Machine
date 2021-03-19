@@ -13,6 +13,7 @@ class Parser(object):
         self.parser = yacc.yacc(module=self, start="program")
 
     def parse(self, data):
+        self.errors = []
         return self.parser.parse(data, self.lexer)
 
     def p_program(self, p):

@@ -74,6 +74,7 @@ class Lexer(object):
     t_ignore = r' '
 
     def input(self, data):
+        self.errors = []
         self.lexer.input(data)
 
     def build(self, **kwargs):

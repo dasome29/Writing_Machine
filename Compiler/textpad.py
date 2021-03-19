@@ -34,16 +34,16 @@ def compile(data):
     parser = Parser(Lexer())
     lexer.run(data)
     if lexer.errors:
-        return (lexer.errors[0])
+        return [lexer.errors[0]]
     else:
         parsed = parser.parse(data)
         if parser.errors:
-            return (parser.errors[0])
+            return [parser.errors[0]]
         else:
             semantic = Semantic()
             result = semantic.analyze(parsed)
             if semantic.errors:
-                return (semantic.errors[0])
+                return [semantic.errors[0]]
             else:
                 return result
 

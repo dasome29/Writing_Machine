@@ -153,7 +153,7 @@ def format_stack_entry(r):
 
 # This class is used to hold non-terminal grammar symbols during parsing.
 # It normally has the following attributes set:
-#        .type       = Grammar symbol type
+#        .type       = Grammar.txt symbol type
 #        .value      = Symbol value
 #        .lineno     = Starting line number
 #        .endlineno  = Ending line number (optional, set automatically)
@@ -591,7 +591,7 @@ class LRParser:
 
 
 # -----------------------------------------------------------------------------
-#                          === Grammar Representation ===
+#                          === Grammar.txt Representation ===
 #
 # The following functions, classes, and variables are used to represent and
 # manipulate the rules that make up a grammar.
@@ -716,7 +716,7 @@ class Production(object):
 #       lookaheads - LALR lookahead symbols for this item
 #       len        - Length of the production (number of symbols on right hand side)
 #       lr_after    - List of all productions that immediately follow
-#       lr_before   - Grammar symbol immediately before
+#       lr_before   - Grammar.txt symbol immediately before
 # -----------------------------------------------------------------------------
 
 class LRItem(object):
@@ -2394,7 +2394,7 @@ def yacc(*, debug=yaccdebug, module=None, start=None,
     # Print out all productions to the debug log
     if debug:
         debuglog.info('')
-        debuglog.info('Grammar')
+        debuglog.info('Grammar.txt')
         debuglog.info('')
         for n, p in enumerate(grammar.Productions):
             debuglog.info('Rule %-5d %s', n, p)
