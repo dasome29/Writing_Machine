@@ -4,19 +4,38 @@ from tkinter import font
 import getpass
 
 from main import *
+from svgToGcode import *
 
 root = Tk()
 root.title('My Title')
 root.geometry('1000x660')
 root.resizable(width=False, height=False)
 
+global currentSvg
+currentSvg = ""
+
 # Set variable for open file name
 global openStatusName
 openStatusName = False
 
-def getPath():
-    user = getpass.getuser()
-    print(user)
+def importSvg():
+    global currentSvg
+    # Grab Filename
+    textFile = filedialog.askopenfilename(title="Open File", filetypes=(("Svg Files", "*.svg"), ("All Files", "*.*")))
+    currentSvg = textFile
+    T.delete("1.0", END)
+    T.insert(END, "Import successful")
+
+def printImage():
+    if currentSvg:
+        mySvg_to_gcode = svg_to_gcode()
+        mySvg_to_gcode.complier(currentSvg)
+        T.delete("1.0", END)
+        T.insert(END, "Print successful")
+    else:
+        T.delete("1.0", END)
+        T.insert(END, "No current .svg file found, please import a .svg file first")
+
 
 # Create a new file
 def newFile():
@@ -127,11 +146,12 @@ myFrame = Canvas(root, width=1200, height=660)
 myFrame.place(x=0, y=0)
 
 # Add Button for compilation and execution
-btn_exec = Button(myFrame, text="Execute", fg="black", command=executeCode)
+btn_exec = Button(myFrame, text="Execute code", fg="black", command=executeCode)
 btn_exec.place(x=0, y=0)
 
-btn_algo = Button(myFrame, text="algo", fg="black", command=getPath)
-btn_algo.place(x=85, y=0)
+btn_print = Button(myFrame, text="Print SVG", fg="black", command=printImage)
+btn_print.place(x=120, y=0)
+
 
 # Add text field for console
 T = Text(myFrame, height=12, width=125)
@@ -173,6 +193,12 @@ editMenu.add_command(label="Copy")
 editMenu.add_command(label="Paste")
 editMenu.add_command(label="Undo")
 editMenu.add_command(label="Redo")
+
+# Add Import Menu
+importMenu = Menu(myMenu, tearoff=False)
+myMenu.add_cascade(label="Import", menu=importMenu)
+importMenu.add_command(label="SVG", command=importSvg)
+
 
 # Add Status Bar to Bottom of App
 statusBar = Label(root, text='Ready', anchor=E)
