@@ -71,7 +71,6 @@ class Lexer(object):
     t_LESSTHAN = r'\<'
     t_EQUALTHAN = r'\='
     t_SEMICOLON = r'\;'
-    t_ignore = r' '
 
     def input(self, data):
         self.errors = []
@@ -84,7 +83,7 @@ class Lexer(object):
         return self.lexer.token()
 
     def t_WHITESPACE(self, t):
-        r"""[ ]+"""
+        r"""[ ]+|[\t]+"""
         pass
 
     def t_INTEGER(self, t):

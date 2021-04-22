@@ -35,6 +35,8 @@ class Program:
     def __init__(self, procedures):
         super().__init__()
         self.procedures = procedures
+        self.x = 0
+        self.y = 0
         self.table = []
         self.scope_table = []
         self.scope_table.append(self.table)
@@ -197,7 +199,26 @@ class Continue(Procedure):
         if isinstance(temp, Expression):
             temp = temp.solve(self.program, self.global_table)
         if type(temp) == int:
-            self.program.output(f'{self.name} {temp}')
+            if self.name in ("ContinueUp", "ContinueDown"):
+                if self.name == "ContinueUp":
+                    self.program.y = self.program.y - temp
+                else:
+                    self.program.y = self.program.y + temp
+                if 0 <= self.program.x <= 40:
+                    self.program.output(f'G1 Y{self.program.x}')
+                else:
+                    self.program.error("Semantic", f'{self.name}', "Invalid parameter",
+                                       f'Variable Y must be between 0 and 40')
+            else:
+                if self.name == "ContinueLeft":
+                    self.program.x = self.program.x - temp
+                else:
+                    self.program.x = self.program.x + temp
+                if 0 <= self.program.x <= 60:
+                    self.program.output(f'G1 X{self.program.x}')
+                else:
+                    self.program.error("Semantic", f'{self.name}', "Invalid parameter",
+                                       f'Variable X must be between 0 and 60')
         else:
             self.program.error("Semantic", f'{self.name}', "Invalid parameter",
                                f'Variable {self.value} is not accepted {error}')
@@ -229,14 +250,17 @@ class Pos(Procedure):
         if type(temp_y) == int:
             buffer[1] = True
         if buffer[0] and buffer[1]:
-            self.program.output(f'Pos {temp_x} {temp_y}')
+            if 0 <= temp_x <= 60 and 0 <= temp_x <= 40:
+                self.program.output(f'G1 X{temp_x} Y{temp_y}')
+            else:
+                self.program.error("Semantic", f'Pos', "Variable out of bound",
+                                   f'values for X must be between 0 and 60, and for Y between 0 and 40 {error}')
         else:
             if error:
                 try:
                     error = f', {error[0]} and {error[1]} were not found'
                 except IndexError:
                     error = f', {error[0]} was not found'
-            error = ""
             self.program.error("Semantic", f'Pos', "Wrong variable type",
                                f'values must be integers {error}')
 
@@ -253,11 +277,15 @@ class PosAxis(Procedure):
         error = ""
         temp = getValue(self.global_table, self.value)
         if not variableExist(self.global_table, self.value):
-            error = "and was not found"
+            error = "and variable was not found"
         if isinstance(temp, Expression):
             temp = temp.solve(self.program, self.global_table)
         if type(temp) == int:
-            self.program.output(f'{self.name} {temp}')
+            if (self.name[len(self.name) - 1] == "X" and 0 <= temp <= 60) or (self.name[len(self.name) - 1] == "Y" and 0 <= temp <= 40):
+                self.program.output(f'G1 {self.name[len(self.name) - 1]}{temp}')
+            else:
+                self.program.error("Semantic", f'Pos', "Variable out of bound",
+                                   f'values for X must be between 0 and 60, and for Y between 0 and 40 {error}')
         else:
             self.program.error("Semantic", f'{self.name}', "Invalid value",
                                f'Variable {self.value} is not accepted {error}')
@@ -279,7 +307,8 @@ class UseColor(Procedure):
             temp = temp.solve(self.program, self.global_table)
         if type(temp) == int:
             if 0 < temp <= self.program.colors:
-                self.program.output(f'UseColor {self.value}')
+                # self.program.output(f'UseColor {self.value}')
+                pass
             else:
                 self.program.error("Semantic", f'UseColor', "Invalid value",
                                    f'Value must be an integer between 0 and {self.program.colors}')
@@ -296,7 +325,10 @@ class Elevation(Procedure):
     def solve(self, program, scope_table):
         self.program = program
         self.global_table = scope_table + [self.table]
-        self.program.output(self.value)
+        if self.value == "Up":
+            self.program.output("M5")
+        else:
+            self.program.output("M3 S90")
 
 
 class Begin(Procedure):
@@ -306,7 +338,7 @@ class Begin(Procedure):
     def solve(self, program, scope_table):
         self.program = program
         self.global_table = scope_table + [self.table]
-        self.program.output("Pos 0 0")
+        self.program.output("G1 X0 Y0")
 
 
 class Speed(Procedure):
@@ -324,7 +356,7 @@ class Speed(Procedure):
         if isinstance(temp, Expression):
             temp = temp.solve(self.program, self.global_table)
         if type(temp) == int:
-            self.program.output(f'Speed {temp}')
+            self.program.output(f'F{temp}')
         else:
             self.program.error("Semantic", f'Speed', "Invalid value",
                                f'Variable {self.value} is not accepted {error}')

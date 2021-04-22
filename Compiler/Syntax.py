@@ -203,11 +203,11 @@ class Parser(object):
         pass
 
     def p_boolean(self, p):
-        """boolean : AND LPAREN expression COMMA expression RPAREN SEMICOLON
-                   | OR LPAREN expression COMMA expression RPAREN SEMICOLON
-                   | GREATER LPAREN expression COMMA expression RPAREN SEMICOLON
-                   | SMALLER LPAREN expression COMMA expression RPAREN SEMICOLON
-                   | EQUAL LPAREN expression COMMA expression RPAREN SEMICOLON"""
+        """boolean : AND LPAREN expression COMMA expression RPAREN
+                   | OR LPAREN expression COMMA expression RPAREN
+                   | GREATER LPAREN expression COMMA expression RPAREN
+                   | SMALLER LPAREN expression COMMA expression RPAREN
+                   | EQUAL LPAREN expression COMMA expression RPAREN"""
         if p[1] == "And":
             p[0] = And(p[3], p[5])
         elif p[1] == "Or":
@@ -226,11 +226,11 @@ class Parser(object):
         pass
 
     def p_arithmetic(self, p):
-        """arithmetic : MULTIPLY LPAREN expression COMMA expression RPAREN SEMICOLON
-                      | DIVIDE LPAREN expression COMMA expression RPAREN SEMICOLON
-                      | POWER LPAREN expression COMMA expression RPAREN SEMICOLON
-                      | ADDITION LPAREN expression COMMA expression RPAREN SEMICOLON
-                      | SUBTRACT LPAREN expression COMMA expression RPAREN SEMICOLON"""
+        """arithmetic : MULTIPLY LPAREN expression COMMA expression RPAREN
+                      | DIVIDE LPAREN expression COMMA expression RPAREN
+                      | POWER LPAREN expression COMMA expression RPAREN
+                      | ADDITION LPAREN expression COMMA expression RPAREN
+                      | SUBTRACT LPAREN expression COMMA expression RPAREN"""
         if p[1] == "Multiply":
             p[0] = Multiply(p[3], p[5])
         elif p[1] == "Divide":
@@ -244,7 +244,7 @@ class Parser(object):
         pass
 
     def p_arithmetic_random(self, p):
-        """arithmetic : RANDOM LPAREN expression RPAREN SEMICOLON"""
+        """arithmetic : RANDOM LPAREN expression RPAREN"""
         p[0] = Random(p[3])
         pass
 

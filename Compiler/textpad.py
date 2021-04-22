@@ -1,10 +1,24 @@
 from tkinter import *
 from tkinter import filedialog
+from tkinter import messagebox
+import serial
+import time
 from tkinter import font
 import getpass
 
 from main import *
 from svgToGcode import *
+s = serial.Serial('COM4', 115200)
+s.write("\r\n\r\n".encode())
+time.sleep(2)  # Wait for grbl to initialize
+s.flushInput()  # Flush startup text in serial input
+initial = ["$H", "G92 X0 Y0", "F300"]
+for i in initial:
+    print(f'Sending {i}')
+    s.write(f'{i}\n'.encode())
+    grbl_out = s.readline()  # Wait for grbl response with carriage return
+    print(' : ' + grbl_out.strip().decode())
+
 
 root = Tk()
 root.title('My Title')
@@ -18,6 +32,7 @@ currentSvg = ""
 global openStatusName
 openStatusName = False
 
+
 def importSvg():
     global currentSvg
     # Grab Filename
@@ -25,6 +40,7 @@ def importSvg():
     currentSvg = textFile
     T.delete("1.0", END)
     T.insert(END, "Import successful")
+
 
 def printImage():
     if currentSvg:
@@ -69,7 +85,8 @@ def compile(data):
 
 # Save as File
 def saveAsFile():
-    textFile = filedialog.asksaveasfilename(title="Save File", filetypes=(("Text Files", "*.txt"), ("HTML Files", "*.html"), ("Python Files", "*.py"), ("All Files", "*.*")))
+    textFile = filedialog.asksaveasfilename(title="Save File", filetypes=(
+        ("Text Files", "*.txt"), ("HTML Files", "*.html"), ("Python Files", "*.py"), ("All Files", "*.*")))
     print(textFile)
     if textFile:
         # Update status bars
@@ -136,9 +153,16 @@ def executeCode():
     # print("Input: " + input)
     # print("Output: "+output)
 
+    # Wake up grbl
+
+
     if output:
         for i in output:
-            T.insert(END, i + "| ")
+            print(f'Sending {i}')
+            s.write(f'{i}\n'.encode())
+            grbl_out = s.readline()  # Wait for grbl response with carriage return
+            print(' : ' + grbl_out.strip().decode())
+        # Close file and serial port
 
 
 # Create Main Frame
@@ -151,7 +175,6 @@ btn_exec.place(x=0, y=0)
 
 btn_print = Button(myFrame, text="Print SVG", fg="black", command=printImage)
 btn_print.place(x=120, y=0)
-
 
 # Add text field for console
 T = Text(myFrame, height=12, width=125)
@@ -199,9 +222,17 @@ importMenu = Menu(myMenu, tearoff=False)
 myMenu.add_cascade(label="Import", menu=importMenu)
 importMenu.add_command(label="SVG", command=importSvg)
 
-
 # Add Status Bar to Bottom of App
 statusBar = Label(root, text='Ready', anchor=E)
 statusBar.pack(fill=X, side=BOTTOM, ipady=5)
+
+
+def on_closing():
+    if messagebox.askokcancel("Quit", "Do you want to quit?"):
+        s.close()
+        root.destroy()
+
+
+root.protocol("WM_DELETE_WINDOW", on_closing)
 
 root.mainloop()
