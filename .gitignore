@@ -226,6 +226,8 @@ env.bak/
 venv.bak/
 pythonenv*
 
+Compiler/__pycache__
+
 # Spyder project settings
 .spyderproject
 .spyproject
