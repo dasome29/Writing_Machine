@@ -28,6 +28,9 @@ root.title('My Title')
 root.geometry('1000x660')
 root.resizable(width=False, height=False)
 
+global currentColor
+currentColor=1
+
 global currentSvg
 currentSvg = ""
 
@@ -172,12 +175,38 @@ def executeCode():
 myFrame = Canvas(root, width=1200, height=660)
 myFrame.place(x=0, y=0)
 
+# Button and function for changing colors,just a test
 
-foto = ImageTk.PhotoImage(Image.open("/Users/migue/Desktop/Proyecto_Compi/props/azul.png"))
-myLabel = Label(image=foto)
-myLabel.place(x=200,y=0)
+azul = ImageTk.PhotoImage(Image.open("/Users/migue/Desktop/Proyecto_Compi/props/azul.png"))
+rojo = ImageTk.PhotoImage(Image.open("/Users/migue/Desktop/Proyecto_Compi/props/rojo.png"))
+verde = ImageTk.PhotoImage(Image.open("/Users/migue/Desktop/Proyecto_Compi/props/verde.png"))
 
+imageAzul = myFrame.create_image(220, 10, anchor=NW, image = azul, state=HIDDEN)
+imageRojo = myFrame.create_image(220, 10, anchor=NW, image = rojo, state=HIDDEN)
+imageVerde = myFrame.create_image(220, 10, anchor=NW, image = verde, state=HIDDEN)
 
+def changeColorRed():
+    imageAzul = myFrame.create_image(220, 10, anchor=NW, image = azul, state=HIDDEN)
+    imageRojo = myFrame.create_image(220, 10, anchor=NW, image = rojo, state=NORMAL)
+    imageVerde = myFrame.create_image(220, 10, anchor=NW, image = verde, state=HIDDEN)
+      
+def changeColorGreen():
+    imageAzul = myFrame.create_image(220, 10, anchor=NW, image = azul, state=NORMAL)
+    imageRojo = myFrame.create_image(220, 10, anchor=NW, image = rojo, state=HIDDEN)
+    imageVerde = myFrame.create_image(220, 10, anchor=NW, image = verde, state=HIDDEN)
+  
+def changeColorBlue():
+    imageAzul = myFrame.create_image(220, 10, anchor=NW, image = azul, state=HIDDEN)
+    imageRojo = myFrame.create_image(220, 10, anchor=NW, image = rojo, state=HIDDEN)
+    imageVerde = myFrame.create_image(220, 10, anchor=NW, image = verde, state=NORMAL)
+  
+        
+btn_red = Button(myFrame, text="red", fg="black", command=changeColorRed)
+btn_red.place(x=300, y=0)
+btn_blue = Button(myFrame, text="green", fg="black", command=changeColorBlue)
+btn_blue.place(x=370, y=0)
+btn_green = Button(myFrame, text="blue", fg="black", command=changeColorGreen)
+btn_green.place(x=450, y=0)
 
 # Add Button for compilation and execution
 btn_exec = Button(myFrame, text="Execute code", fg="black", command=executeCode)
@@ -207,6 +236,7 @@ textScroll.config(command=myText.yview)
 # Create Menu
 myMenu = Menu(root)
 root.config(menu=myMenu)
+
 
 # Add File Menu
 fileMenu = Menu(myMenu, tearoff=False)
