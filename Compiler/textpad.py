@@ -8,16 +8,19 @@ import getpass
 
 from main import *
 from svgToGcode import *
-s = serial.Serial('COM4', 115200)
-s.write("\r\n\r\n".encode())
-time.sleep(2)  # Wait for grbl to initialize
-s.flushInput()  # Flush startup text in serial input
-initial = ["$H", "G92 X0 Y0", "F300"]
-for i in initial:
-    print(f'Sending {i}')
-    s.write(f'{i}\n'.encode())
-    grbl_out = s.readline()  # Wait for grbl response with carriage return
-    print(' : ' + grbl_out.strip().decode())
+from PIL import Image, ImageTk
+
+
+# s = serial.Serial('COM4', 115200)
+# s.write("\r\n\r\n".encode())
+# time.sleep(2)  # Wait for grbl to initialize
+# s.flushInput()  # Flush startup text in serial input
+# initial = ["$H", "G92 X0 Y0", "F300"]
+# for i in initial:
+#     print(f'Sending {i}')
+#     s.write(f'{i}\n'.encode())
+#     grbl_out = s.readline()  # Wait for grbl response with carriage return
+#     print(' : ' + grbl_out.strip().decode())
 
 
 root = Tk()
@@ -168,6 +171,13 @@ def executeCode():
 # Create Main Frame
 myFrame = Canvas(root, width=1200, height=660)
 myFrame.place(x=0, y=0)
+
+
+foto = ImageTk.PhotoImage(Image.open("/Users/migue/Desktop/Proyecto_Compi/props/azul.png"))
+myLabel = Label(image=foto)
+myLabel.place(x=200,y=0)
+
+
 
 # Add Button for compilation and execution
 btn_exec = Button(myFrame, text="Execute code", fg="black", command=executeCode)
